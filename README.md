@@ -24,13 +24,14 @@ Licenciado sob a **licença MIT** (ver [LICENSE](LICENSE)).
 
 ## Cenários cobertos
 
-Duas apólices e três eventos climáticos, com cinco combinações ativas:
+Duas apólices e quatro eventos climáticos, com sete combinações ativas:
 
 | Evento | Residencial | Automotiva | Sinal na API |
 | --- | --- | --- | --- |
 | Chuva intensa | alagamento, infiltração | aquaplanagem, via alagada | `precipitation` |
 | Raio | surto elétrico | não se aplica | `weather_code` 95 + `cape` |
 | Vento forte | telhas, objetos soltos | queda de árvore sobre o veículo | `wind_gusts_10m` |
+| Granizo | telhado, claraboias, vidros | lataria e para-brisa | `cape` + `freezing_level_height` |
 
 > Raio × automotiva é intencionalmente descartado: um automóvel é uma gaiola de
 > Faraday e não há recomendação preventiva honesta a dar nesse caso.
@@ -100,7 +101,7 @@ python scripts/demo.py             # fluxo completo por linha de comando
                                             v
                      +--------------------------------------------+
                      |  ANALISE (app/domain)                      |
-                     |  classifica eventos: chuva, raio, vento    |
+                     |  chuva, raio, vento forte e granizo        |
                      +----------------------+---------------------+
                                             |
                                             v
@@ -138,7 +139,8 @@ python scripts/demo.py             # fluxo completo por linha de comando
 [**Open-Meteo**](https://open-meteo.com) — API pública de previsão
 meteorológica, sem necessidade de cadastro ou chave para uso não comercial.
 Variáveis consumidas: `precipitation`, `wind_gusts_10m`, `weather_code` (códigos
-WMO) e `cape` (energia potencial convectiva disponível).
+WMO), `cape` (energia potencial convectiva disponível) e `freezing_level_height`
+(altitude da isoterma de 0 °C, usada para estimar risco de granizo).
 
 ---
 
