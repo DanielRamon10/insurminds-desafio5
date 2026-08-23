@@ -498,8 +498,8 @@
 
   <h2><span class="n">03</span>Cenários decididos pelo grupo</h2>
   <p class="sub">
-    Duas apólices e três eventos, fechados na Fase 0. Cinco das seis combinações
-    entram no motor de regras — a sexta é descartada por razão de mérito, explicada
+    Duas apólices e quatro eventos, fechados na Fase 0. Sete das oito combinações
+    entram no motor de regras — a oitava é descartada por razão de mérito, explicada
     abaixo.
   </p>
 
@@ -527,6 +527,12 @@
           <td>Queda de árvore sobre o veículo</td>
           <td class="ids">wind_gusts_10m</td>
         </tr>
+        <tr>
+          <td><strong>Granizo</strong></td>
+          <td>Telhado, claraboias, vidros</td>
+          <td>Lataria e para-brisa</td>
+          <td class="ids">cape + freezing_level_height</td>
+        </tr>
       </tbody>
     </table>
   </div>
@@ -538,27 +544,35 @@
       dos lugares mais seguros onde se pode estar. Não há recomendação preventiva
       honesta a dar ao segurado — e uma mensagem do tipo “cuidado com raios no seu
       carro” é tecnicamente incorreta, o oposto do que o desafio avalia em qualidade
-      das mensagens. Ficam <strong>cinco cenários ativos</strong>.
+      das mensagens. Ficam <strong>sete cenários ativos</strong>.
     </p>
   </div>
 
-  <div class="note">
-    <p class="note-t">Granizo agora sai quase de graça — se o grupo quiser</p>
+  <div class="find">
+    <p class="find-t">Granizo: o proxy correto é o nível de congelamento, não o CAPE</p>
     <p>
-      Ao trocar granizo por raio, a apólice automotiva perdeu seu evento mais
-      característico: granizo é o clássico de dano em veículo. E o sinal necessário é
-      quase o mesmo do raio — trovoada mais CAPE, só com limiar mais alto. Como a
-      detecção de trovoada já vai existir para o raio, acrescentar granizo como quarto
-      evento custa pouco código. Decisão do grupo; registro aqui porque a janela é
-      barata.
+      CAPE alto explica por que a tempestade se forma, mas não se a pedra chega ao chão
+      — ela derrete na queda. O que decide isso é a
+      <code>freezing_level_height</code>: quanto mais baixa a altitude onde a atmosfera
+      atinge 0 °C, menor o percurso derretendo. A variável está disponível para o Brasil.
+    </p>
+    <p>
+      Medido hoje, o gradiente confirma a física e a climatologia do país: no Sul o
+      nível de congelamento cai a <strong>1.760 m</strong> em Porto Alegre e 2.370 m em
+      Caxias do Sul, enquanto no Norte fica entre 4.370 e 5.320 m. É exatamente onde o
+      granizo é frequente no Brasil. O contraste mais útil é Manaus — CAPE de 3.450 J/kg,
+      dos mais altos do país, mas nível de congelamento a 4.740 m: muita descarga
+      elétrica, granizo raro. Distinguir raio de granizo por essa variável separa os dois
+      eventos com fundamento, em vez de arbitrar dois limiares no mesmo sinal.
     </p>
   </div>
 
   <p class="sub">
     <strong>Limiares de partida</strong> para a tarefa B.2, medidos hoje em 15 capitais:
     chuva intensa a partir de 10 mm/h ou 40 mm em 48 h; vento forte a partir de 60 km/h
-    de rajada; raio com código WMO 95 e CAPE de 800 J/kg. São ponto de partida, não
-    conclusão — calibrar e justificar é a tarefa B.4.
+    de rajada; raio com código WMO 95 e CAPE de 800 J/kg; granizo com trovoada, CAPE
+    acima de 1.500 J/kg e nível de congelamento abaixo de 3.800 m. São ponto de partida,
+    não conclusão — calibrar e justificar é a tarefa B.4.
   </p>
 
   <h2><span class="n">04</span>Fase 0 — Fundação</h2>
@@ -579,7 +593,7 @@
         <div class="task-top"><span class="tid">F0.1</span></div>
         <p class="task-name">Escolher os cenários de negócio</p>
         <p><strong>Decidido pelo grupo:</strong> duas apólices (residencial e
-        automotiva) e três eventos (chuva intensa, raio e vento forte). A matriz
+        automotiva) e quatro eventos (chuva intensa, raio, vento forte e granizo). A matriz
         resultante está na seção 03.</p>
         <p class="done"><b>Concluída</b> restam as cidades monitoradas, item ainda
         aberto desta mesma decisão.</p>
@@ -705,9 +719,9 @@
       <div class="task">
         <div class="task-top"><span class="tid">B.2</span></div>
         <p class="task-name">Classificador de eventos</p>
-        <p>Traduzir números em eventos nomeados com severidade: chuva intensa, raio
-        e vento forte. Raio vem de código WMO 95 combinado com CAPE; os outros dois saem
-        de precipitação e rajada.</p>
+        <p>Traduzir números em eventos nomeados com severidade: chuva intensa, raio,
+        vento forte e granizo. Chuva e vento saem direto de precipitação e rajada; raio
+        de código WMO 95 mais CAPE; granizo acrescenta o nível de congelamento.</p>
         <p class="done"><b>Pronto quando</b> a mesma previsão sempre produzir a mesma
         classificação, e cada limiar tiver um número justificado.</p>
       </div>
