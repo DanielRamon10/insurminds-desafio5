@@ -1,0 +1,1137 @@
+<title>Roteiro do Desafio 5</title>
+<style>
+  :root {
+    --ground:      #f6f9fb;
+    --surface:     #ffffff;
+    --surface-2:   #edf3f7;
+    --ink:         #0f1f2b;
+    --ink-2:       #3f5462;
+    --ink-3:       #6d8492;
+    --line:        #d2dde5;
+    --line-soft:   #e5ecf1;
+    --accent:      #0a6b8a;
+    --accent-soft: #e0eef4;
+    --warn:        #a25c08;
+    --warn-soft:   #fcf0dc;
+    --crit:        #a0362a;
+    --crit-soft:   #fae8e5;
+    --ok:          #276643;
+    --ok-soft:     #e2f0e9;
+
+    --display: Candara, Optima, "Gill Sans MT", "Trebuchet MS", "Segoe UI", sans-serif;
+    --body:    "Segoe UI", system-ui, -apple-system, "Helvetica Neue", sans-serif;
+    --mono:    "Cascadia Mono", Consolas, "SF Mono", ui-monospace, monospace;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --ground:      #0a131a;
+      --surface:     #101d26;
+      --surface-2:   #16252e;
+      --ink:         #e7eff4;
+      --ink-2:       #a6bdca;
+      --ink-3:       #7a94a2;
+      --line:        #223440;
+      --line-soft:   #1a2934;
+      --accent:      #58bad9;
+      --accent-soft: #123240;
+      --warn:        #dfa451;
+      --warn-soft:   #31250e;
+      --crit:        #e08573;
+      --crit-soft:   #331a15;
+      --ok:          #6fbf90;
+      --ok-soft:     #10291d;
+    }
+  }
+
+  :root[data-theme="dark"] {
+    --ground:      #0a131a;
+    --surface:     #101d26;
+    --surface-2:   #16252e;
+    --ink:         #e7eff4;
+    --ink-2:       #a6bdca;
+    --ink-3:       #7a94a2;
+    --line:        #223440;
+    --line-soft:   #1a2934;
+    --accent:      #58bad9;
+    --accent-soft: #123240;
+    --warn:        #dfa451;
+    --warn-soft:   #31250e;
+    --crit:        #e08573;
+    --crit-soft:   #331a15;
+    --ok:          #6fbf90;
+    --ok-soft:     #10291d;
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    background: var(--ground);
+    color: var(--ink);
+    font-family: var(--body);
+    font-size: 16px;
+    line-height: 1.55;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .wrap {
+    max-width: 1060px;
+    margin: 0 auto;
+    padding: 40px 24px 96px;
+  }
+
+  /* ---------- cabeçalho ---------- */
+
+  .head { border-bottom: 2px solid var(--ink); padding-bottom: 22px; }
+
+  .eyebrow {
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: .13em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin: 0 0 10px;
+  }
+
+  h1 {
+    font-family: var(--display);
+    font-size: clamp(30px, 5vw, 46px);
+    line-height: 1.08;
+    font-weight: 600;
+    letter-spacing: -.015em;
+    text-wrap: balance;
+    margin: 0 0 12px;
+  }
+
+  .lede {
+    font-size: 17px;
+    color: var(--ink-2);
+    max-width: 62ch;
+    margin: 0;
+  }
+
+  .meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px 28px;
+    margin-top: 24px;
+  }
+
+  .meta-item { display: flex; flex-direction: column; gap: 2px; }
+
+  .meta-k {
+    font-family: var(--mono);
+    font-size: 10.5px;
+    letter-spacing: .11em;
+    text-transform: uppercase;
+    color: var(--ink-3);
+  }
+
+  .meta-v {
+    font-family: var(--display);
+    font-size: 19px;
+    font-weight: 600;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .meta-v.hot { color: var(--warn); }
+
+  /* ---------- seções ---------- */
+
+  h2 {
+    font-family: var(--display);
+    font-size: 25px;
+    font-weight: 600;
+    letter-spacing: -.01em;
+    text-wrap: balance;
+    margin: 56px 0 6px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid var(--line);
+  }
+
+  h2 .n {
+    font-family: var(--mono);
+    font-size: 14px;
+    font-weight: 400;
+    color: var(--accent);
+    margin-right: 10px;
+    vertical-align: 2px;
+  }
+
+  .sub { color: var(--ink-2); max-width: 66ch; margin: 10px 0 0; }
+
+  /* ---------- avisos ---------- */
+
+  .note {
+    border-left: 3px solid var(--accent);
+    background: var(--accent-soft);
+    padding: 14px 18px;
+    margin: 20px 0;
+    border-radius: 0 4px 4px 0;
+  }
+
+  .note.flag { border-left-color: var(--warn); background: var(--warn-soft); }
+  .note.stop { border-left-color: var(--crit); background: var(--crit-soft); }
+
+  .note-t {
+    font-family: var(--display);
+    font-weight: 600;
+    font-size: 16px;
+    margin: 0 0 4px;
+  }
+
+  .note p { margin: 0; font-size: 14.5px; color: var(--ink-2); }
+  .note p + p { margin-top: 8px; }
+
+  /* ---------- fases ---------- */
+
+  .phase { margin-top: 40px; }
+
+  .phase-head {
+    display: flex;
+    align-items: baseline;
+    gap: 14px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid var(--line);
+  }
+
+  .phase-tag {
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: .1em;
+    text-transform: uppercase;
+    color: var(--surface);
+    background: var(--ink);
+    padding: 4px 9px;
+    border-radius: 3px;
+    flex-shrink: 0;
+  }
+
+  .phase-tag.par { background: var(--accent); }
+
+  .phase-title {
+    font-family: var(--display);
+    font-size: 21px;
+    font-weight: 600;
+    margin: 0;
+  }
+
+  .phase-when {
+    font-family: var(--mono);
+    font-size: 12px;
+    color: var(--ink-3);
+    margin-left: auto;
+    flex-shrink: 0;
+  }
+
+  .phase-note { color: var(--ink-2); font-size: 14.5px; margin: 12px 0 0; max-width: 66ch; }
+
+  /* ---------- tarefas ---------- */
+
+  .tasks {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(292px, 1fr));
+    gap: 12px;
+    margin-top: 18px;
+  }
+
+  .task {
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: 5px;
+    padding: 14px 16px 15px;
+    display: flex;
+    flex-direction: column;
+    gap: 7px;
+  }
+
+  .task-top { display: flex; align-items: center; gap: 9px; }
+
+  .tid {
+    font-family: var(--mono);
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--accent);
+    background: var(--accent-soft);
+    padding: 3px 7px;
+    border-radius: 3px;
+    flex-shrink: 0;
+  }
+
+  .task-name {
+    font-family: var(--display);
+    font-size: 16px;
+    font-weight: 600;
+    line-height: 1.3;
+    margin: 0;
+  }
+
+  .task p { margin: 0; font-size: 14px; color: var(--ink-2); }
+
+  .done {
+    font-size: 13px;
+    color: var(--ink-3);
+    border-top: 1px dashed var(--line);
+    padding-top: 7px;
+    margin-top: auto;
+  }
+
+  .done b {
+    font-family: var(--mono);
+    font-size: 10.5px;
+    letter-spacing: .08em;
+    text-transform: uppercase;
+    color: var(--ok);
+    display: block;
+    margin-bottom: 2px;
+    font-weight: 600;
+  }
+
+  .dep {
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--warn);
+  }
+
+  /* ---------- tabelas ---------- */
+
+  .scroll { overflow-x: auto; margin: 20px 0; }
+
+  table {
+    border-collapse: collapse;
+    width: 100%;
+    min-width: 560px;
+    font-size: 14px;
+  }
+
+  th, td {
+    text-align: left;
+    padding: 9px 12px;
+    border-bottom: 1px solid var(--line-soft);
+    vertical-align: top;
+  }
+
+  thead th {
+    font-family: var(--mono);
+    font-size: 10.5px;
+    letter-spacing: .09em;
+    text-transform: uppercase;
+    color: var(--ink-3);
+    border-bottom: 1px solid var(--line);
+    font-weight: 600;
+    white-space: nowrap;
+  }
+
+  tbody tr:last-child td { border-bottom: none; }
+
+  td.ids { font-family: var(--mono); font-size: 12.5px; color: var(--accent); white-space: nowrap; }
+  td.who { font-weight: 600; white-space: nowrap; }
+
+  /* ---------- código / achados ---------- */
+
+  code {
+    font-family: var(--mono);
+    font-size: .89em;
+    background: var(--surface-2);
+    padding: 1.5px 5px;
+    border-radius: 3px;
+  }
+
+  pre {
+    font-family: var(--mono);
+    font-size: 12.5px;
+    line-height: 1.5;
+    background: var(--surface-2);
+    border: 1px solid var(--line);
+    border-radius: 5px;
+    padding: 13px 15px;
+    overflow-x: auto;
+    margin: 16px 0;
+  }
+
+  pre code { background: none; padding: 0; font-size: inherit; }
+
+  .find {
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-left: 3px solid var(--ok);
+    border-radius: 0 5px 5px 0;
+    padding: 14px 17px;
+    margin: 14px 0;
+  }
+
+  .find.risk { border-left-color: var(--warn); }
+
+  .find-t {
+    font-family: var(--display);
+    font-size: 16.5px;
+    font-weight: 600;
+    margin: 0 0 5px;
+  }
+
+  .find p { margin: 0; font-size: 14.5px; color: var(--ink-2); }
+  .find p + p { margin-top: 8px; }
+
+  ul { margin: 10px 0; padding-left: 20px; }
+  li { margin: 4px 0; color: var(--ink-2); font-size: 14.5px; }
+  li strong { color: var(--ink); }
+
+  .foot {
+    margin-top: 64px;
+    padding-top: 18px;
+    border-top: 1px solid var(--line);
+    font-size: 13.5px;
+    color: var(--ink-3);
+  }
+
+  @media (max-width: 620px) {
+    .phase-when { margin-left: 0; width: 100%; }
+    .phase-head { flex-wrap: wrap; }
+  }
+</style>
+
+<div class="wrap">
+
+  <header class="head">
+    <p class="eyebrow">I2A2 · Insurminds · Desafio 5</p>
+    <h1>Ferramenta Inteligente para Comunicação Proativa com o Segurado</h1>
+    <p class="lede">
+      Monitorar clima, identificar risco, decidir quem avisar e escrever o aviso —
+      antes do sinistro. Abaixo, as 31 tarefas que fecham 100% do enunciado,
+      divididas em cinco frentes que rodam em paralelo.
+    </p>
+    <div class="meta">
+      <div class="meta-item">
+        <span class="meta-k">Prazo</span>
+        <span class="meta-v">13/09/2026, 23h59</span>
+      </div>
+      <div class="meta-item">
+        <span class="meta-k">Dias restantes</span>
+        <span class="meta-v hot">23</span>
+      </div>
+      <div class="meta-item">
+        <span class="meta-k">Tarefas</span>
+        <span class="meta-v">31</span>
+      </div>
+      <div class="meta-item">
+        <span class="meta-k">Frentes paralelas</span>
+        <span class="meta-v">5</span>
+      </div>
+    </div>
+  </header>
+
+  <h2><span class="n">01</span>Antes de dividir: três coisas que mudam</h2>
+  <p class="sub">
+    O Desafio 5 não é o 4 com outro tema. Três diferenças alteram o planejamento.
+  </p>
+
+  <div class="note stop">
+    <p class="note-t">O GitHub público deixou de ser opcional</p>
+    <p>
+      O enunciado se contradiz: em <em>Entregáveis</em> o repositório aparece como
+      opcional, mas em <em>Observações importantes</em> lê-se “o repositório do GitHub
+      <strong>deverá</strong> possuir acesso público” e que o README precisa conter
+      instruções de instalação e execução, além de informar a licença MIT.
+    </p>
+    <p>
+      A única leitura em que as duas frases coexistem sem risco é fazer o repositório.
+      Trate como obrigatório — e crie-o na primeira semana, não na última.
+    </p>
+  </div>
+
+  <div class="note flag">
+    <p class="note-t">A base de segurados não vem pronta</p>
+    <p>
+      No Desafio 4 os CSVs de notas fiscais vinham do curso. Aqui não há base alguma:
+      o grupo precisa <strong>criar</strong> os segurados fictícios, com apólice,
+      cidade e coordenadas. Isso é pré-requisito das regras de negócio e da geração de
+      mensagens — sem ele, duas frentes ficam paradas.
+    </p>
+  </div>
+
+  <div class="note">
+    <p class="note-t">Muito do Desafio 4 é reaproveitável</p>
+    <p>
+      Copie e adapte em vez de reescrever: <code>app/config.py</code> (multi-provedor de
+      LLM e leitura de chaves), o tratamento de limite de requisições do
+      <code>app/agent.py</code>, <code>scripts/gerar_pdf.py</code> e
+      <code>scripts/gerar_entrega.py</code> — este último já audita credenciais antes de
+      empacotar. São várias horas economizadas nas frentes C e E.
+    </p>
+  </div>
+
+  <h2><span class="n">02</span>Decisões técnicas já validadas</h2>
+  <p class="sub">
+    Testei as opções de fonte de dados hoje para o grupo não gastar tempo descobrindo
+    isso na marra.
+  </p>
+
+  <div class="find">
+    <p class="find-t">Use a Open-Meteo: sem chave, sem cadastro, funciona no Brasil</p>
+    <p>
+      Testada com coordenadas de São Paulo: retornou 72 horas de previsão com
+      precipitação (mm), rajadas de vento (km/h), código WMO de tempo e CAPE (J/kg).
+      Não exige chave de API — uma credencial a menos para gerenciar e esconder.
+      O enunciado aceita “outras fontes públicas, desde que devidamente documentadas”.
+    </p>
+    <pre><code>https://api.open-meteo.com/v1/forecast
+  ?latitude=-23.55&amp;longitude=-46.63
+  &amp;hourly=precipitation,wind_gusts_10m,weather_code,cape
+  &amp;timezone=America/Sao_Paulo&amp;forecast_days=3</code></pre>
+  </div>
+
+  <div class="find risk">
+    <p class="find-t">Raio é detectável no Brasil; o campo dedicado a ele, não</p>
+    <p>
+      A variável <code>lightning_potential</code> é aceita pela API mas volta
+      <strong>vazia</strong> para o Brasil — o mesmo problema dos códigos WMO 96 e 99
+      (trovoada com granizo), preenchidos só na Europa Central.
+    </p>
+    <p>
+      O <strong>código WMO 95</strong> (trovoada), esse sim, funciona: em Manaus ele
+      apareceu junto de CAPE de 3.450 J/kg. Detectar raio é portanto código 95 mais
+      CAPE acima do limiar — dois campos que a API entrega para o Brasil. A troca de
+      granizo por raio, decidida pelo grupo, saiu mais barata do que o cenário original.
+    </p>
+  </div>
+
+  <h2><span class="n">03</span>Cenários decididos pelo grupo</h2>
+  <p class="sub">
+    Duas apólices e três eventos, fechados na Fase 0. Cinco das seis combinações
+    entram no motor de regras — a sexta é descartada por razão de mérito, explicada
+    abaixo.
+  </p>
+
+  <div class="scroll">
+    <table>
+      <thead>
+        <tr><th>Evento</th><th>Residencial</th><th>Automotiva</th><th>Sinal na API</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>Chuva intensa</strong></td>
+          <td>Alagamento, infiltração, telhado</td>
+          <td>Aquaplanagem, veículo em via alagada</td>
+          <td class="ids">precipitation</td>
+        </tr>
+        <tr>
+          <td><strong>Raio</strong></td>
+          <td>Surto elétrico, queima de aparelhos</td>
+          <td>— não se aplica</td>
+          <td class="ids">weather_code 95 + cape</td>
+        </tr>
+        <tr>
+          <td><strong>Vento forte</strong></td>
+          <td>Telhas, antenas, objetos soltos</td>
+          <td>Queda de árvore sobre o veículo</td>
+          <td class="ids">wind_gusts_10m</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="note flag">
+    <p class="note-t">Raio × automotiva é o par a descartar</p>
+    <p>
+      Um automóvel é uma gaiola de Faraday: durante uma tempestade elétrica ele é um
+      dos lugares mais seguros onde se pode estar. Não há recomendação preventiva
+      honesta a dar ao segurado — e uma mensagem do tipo “cuidado com raios no seu
+      carro” é tecnicamente incorreta, o oposto do que o desafio avalia em qualidade
+      das mensagens. Ficam <strong>cinco cenários ativos</strong>.
+    </p>
+  </div>
+
+  <div class="note">
+    <p class="note-t">Granizo agora sai quase de graça — se o grupo quiser</p>
+    <p>
+      Ao trocar granizo por raio, a apólice automotiva perdeu seu evento mais
+      característico: granizo é o clássico de dano em veículo. E o sinal necessário é
+      quase o mesmo do raio — trovoada mais CAPE, só com limiar mais alto. Como a
+      detecção de trovoada já vai existir para o raio, acrescentar granizo como quarto
+      evento custa pouco código. Decisão do grupo; registro aqui porque a janela é
+      barata.
+    </p>
+  </div>
+
+  <p class="sub">
+    <strong>Limiares de partida</strong> para a tarefa B.2, medidos hoje em 15 capitais:
+    chuva intensa a partir de 10 mm/h ou 40 mm em 48 h; vento forte a partir de 60 km/h
+    de rajada; raio com código WMO 95 e CAPE de 800 J/kg. São ponto de partida, não
+    conclusão — calibrar e justificar é a tarefa B.4.
+  </p>
+
+  <h2><span class="n">04</span>Fase 0 — Fundação</h2>
+  <p class="sub">
+    Decisões que <strong>bloqueiam todo o resto</strong>. A F0.1 já saiu; as três
+    restantes, feitas numa única reunião, destravam as cinco frentes.
+  </p>
+
+  <div class="phase">
+    <div class="phase-head">
+      <span class="phase-tag">Fase 0</span>
+      <h3 class="phase-title">Contratos e alicerce</h3>
+      <span class="phase-when">Dias 1–2 · 3 de 4 pendentes</span>
+    </div>
+
+    <div class="tasks">
+      <div class="task">
+        <div class="task-top"><span class="tid">F0.1</span></div>
+        <p class="task-name">Escolher os cenários de negócio</p>
+        <p><strong>Decidido pelo grupo:</strong> duas apólices (residencial e
+        automotiva) e três eventos (chuva intensa, raio e vento forte). A matriz
+        resultante está na seção 03.</p>
+        <p class="done"><b>Concluída</b> restam as cidades monitoradas, item ainda
+        aberto desta mesma decisão.</p>
+      </div>
+
+      <div class="task">
+        <div class="task-top"><span class="tid">F0.2</span></div>
+        <p class="task-name">Congelar os contratos de dados</p>
+        <p>Definir os três formatos que atravessam o sistema: <code>Segurado</code>,
+        <code>EventoClimatico</code> e <code>Notificacao</code> — nomes de campos, tipos e
+        unidades. É isso que permite cinco pessoas programarem ao mesmo tempo.</p>
+        <p class="done"><b>Pronto quando</b> existir um arquivo de schemas que ninguém
+        precise alterar para começar a codar.</p>
+      </div>
+
+      <div class="task">
+        <div class="task-top"><span class="tid">F0.3</span></div>
+        <p class="task-name">Criar o repositório público</p>
+        <p>Repositório no GitHub com acesso público, <code>LICENSE</code> MIT na raiz,
+        estrutura de pastas, <code>requirements.txt</code>, <code>.gitignore</code> com
+        <code>.env</code> e <code>.env.example</code>.</p>
+        <p class="done"><b>Pronto quando</b> os cinco integrantes tiverem acesso de
+        escrita e o primeiro commit estiver na branch principal.</p>
+      </div>
+
+      <div class="task">
+        <div class="task-top"><span class="tid">F0.4</span></div>
+        <p class="task-name">Definir provedor de LLM e chave</p>
+        <p>Reaproveitar o <code>config.py</code> do Desafio 4. O Gemini já está validado e
+        tem camada gratuita; cada integrante usa a própria chave localmente, no
+        <code>.env</code>.</p>
+        <p class="done"><b>Pronto quando</b> qualquer integrante conseguir rodar uma
+        chamada de teste na própria máquina.</p>
+      </div>
+    </div>
+  </div>
+
+  <h2><span class="n">05</span>Fase 1 — Cinco frentes em paralelo</h2>
+  <p class="sub">
+    Letras, não números: estas frentes não têm ordem entre si. Todas dependem apenas da
+    Fase 0 e podem avançar simultaneamente.
+  </p>
+
+  <!-- FRENTE A -->
+  <div class="phase">
+    <div class="phase-head">
+      <span class="phase-tag par">Frente A</span>
+      <h3 class="phase-title">Coleta meteorológica</h3>
+      <span class="phase-when">Dias 3–10</span>
+    </div>
+    <p class="phase-note">
+      Atende ao requisito “consumir dados de pelo menos uma API pública de informações
+      meteorológicas”.
+    </p>
+
+    <div class="tasks">
+      <div class="task">
+        <div class="task-top"><span class="tid">A.1</span></div>
+        <p class="task-name">Cliente da Open-Meteo</p>
+        <p>Função que recebe latitude e longitude e devolve a previsão horária das
+        variáveis escolhidas. Sem dependência de framework — <code>urllib</code> ou
+        <code>requests</code> resolvem.</p>
+        <p class="done"><b>Pronto quando</b> uma chamada por coordenada devolver a série
+        temporal já tipada.</p>
+      </div>
+
+      <div class="task">
+        <div class="task-top"><span class="tid">A.2</span></div>
+        <p class="task-name">Cache e tolerância a falha</p>
+        <p>Cache local em disco por cidade e hora, com timeout, retry e mensagem clara
+        quando a API estiver fora. Evita repetir chamadas idênticas durante a
+        demonstração.</p>
+        <p class="done"><b>Pronto quando</b> a segunda chamada para a mesma cidade não
+        tocar a rede, e a queda da API não derrubar a aplicação.</p>
+      </div>
+
+      <div class="task">
+        <div class="task-top"><span class="tid">A.3</span></div>
+        <p class="task-name">Normalizador de resposta</p>
+        <p>Converter o JSON bruto no contrato <code>EventoClimatico</code> definido em
+        F0.2, com unidades explícitas e fuso horário do Brasil.</p>
+        <span class="dep">depende de F0.2</span>
+        <p class="done"><b>Pronto quando</b> as frentes B e C conseguirem consumir a saída
+        sem conhecer a API de origem.</p>
+      </div>
+
+      <div class="task">
+        <div class="task-top"><span class="tid">A.4</span></div>
+        <p class="task-name">Segunda fonte: alertas do INMET</p>
+        <p>Opcional, mas rende ponto no critério “correta integração com fontes
+        externas”. Serve para cruzar a previsão calculada com alertas oficiais já
+        emitidos.</p>
+        <p class="done"><b>Pronto quando</b> os alertas oficiais aparecerem ao lado da
+        previsão — ou quando o grupo registrar por que descartou a fonte.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- FRENTE B -->
+  <div class="phase">
+    <div class="phase-head">
+      <span class="phase-tag par">Frente B</span>
+      <h3 class="phase-title">Segurados e regras de negócio</h3>
+      <span class="phase-when">Dias 3–12</span>
+    </div>
+    <p class="phase-note">
+      Atende a “identificar automaticamente eventos climáticos relevantes” e “aplicar
+      regras de decisão para determinar quais segurados devem receber notificações”.
+      É o coração avaliado em “clareza das regras de negócio”.
+    </p>
+
+    <div class="tasks">
+      <div class="task">
+        <div class="task-top"><span class="tid">B.1</span></div>
+        <p class="task-name">Base sintética de segurados</p>
+        <p>CSV com algo entre 30 e 100 segurados fictícios: nome, tipo de apólice,
+        cidade, UF, latitude, longitude e canal preferido. Cobrir capitais de regiões
+        climáticas diferentes para os cenários aparecerem.</p>
+        <p class="done"><b>Pronto quando</b> cada cenário de F0.1 tiver ao menos um
+        segurado elegível na base.</p>
+      </div>
+
+      <div class="task">
+        <div class="task-top"><span class="tid">B.2</span></div>
+        <p class="task-name">Classificador de eventos</p>
+        <p>Traduzir números em eventos nomeados com severidade: chuva intensa, raio
+        e vento forte. Raio vem de código WMO 95 combinado com CAPE; os outros dois saem
+        de precipitação e rajada.</p>
+        <p class="done"><b>Pronto quando</b> a mesma previsão sempre produzir a mesma
+        classificação, e cada limiar tiver um número justificado.</p>
+      </div>
+
+      <div class="task">
+        <div class="task-top"><span class="tid">B.3</span></div>
+        <p class="task-name">Motor de regras</p>
+        <p>Regras em arquivo de configuração, não no código: evento × tipo de apólice ×
+        severidade decide se notifica e com que urgência. Deixar as regras legíveis por
+        quem não programa é o que se avalia.</p>
+        <p class="done"><b>Pronto quando</b> for possível alterar um limiar sem tocar em
+        nenhum arquivo <code>.py</code>.</p>
+      </div>
+
+      <div class="task">
+        <div class="task-top"><span class="tid">B.4</span></div>
+        <p class="task-name">Justificar cada limiar</p>
+        <p>Documentar de onde vem cada número — classificação do INMET, literatura,
+        critério do grupo. Este texto vira direto uma seção do relatório.</p>
+        <p class="done"><b>Pronto quando</b> nenhum limiar do sistema for um número sem
+        procedência declarada.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- FRENTE C -->
+  <div class="phase">
+    <div class="phase-head">
+      <span class="phase-tag par">Frente C</span>
+      <h3 class="phase-title">Agentes e geração de mensagens</h3>
+      <span class="phase-when">Dias 5–14</span>
+    </div>
+    <p class="phase-note">
+      Atende a “gerar mensagens personalizadas utilizando IA ou modelos de linguagem”.
+      A dica do enunciado sugere quatro agentes especializados — coletor, analista,
+      regras e redator.
+    </p>
+
+    <div class="tasks">
+      <div class="task">
+        <div class="task-top"><span class="tid">C.1</span></div>
+        <p class="task-name">Estrutura dos agentes e orquestrador</p>
+        <p>Um módulo por agente, mais um orquestrador que encadeia coleta → análise →
+        decisão → redação. Cada agente com uma responsabilidade só.</p>
+        <span class="dep">depende de F0.2</span>
+        <p class="done"><b>Pronto quando</b> o orquestrador rodar de ponta a ponta com
+        agentes ainda vazios, devolvendo dados de mentira.</p>
+      </div>
+
+      <div class="task">
+        <div class="task-top"><span class="tid">C.2</span></div>
+        <p class="task-name">Agente redator com LLM</p>
+        <p>Prompt que recebe o segurado, o evento e a regra acionada, e escreve a
+        mensagem no tom do canal. Variar por perfil: residencial, automóvel,
+        empresarial.</p>
+        <p class="done"><b>Pronto quando</b> o mesmo evento gerar mensagens visivelmente
+        diferentes para perfis diferentes.</p>
+      </div>
+
+      <div class="task">
+        <div class="task-top"><span class="tid">C.3</span></div>
+        <p class="task-name">Guardrails da mensagem</p>
+        <p>Impedir que o LLM invente números — só pode citar dados vindos da previsão.
+        Respeitar limite por canal (SMS em 160 caracteres) e proibir promessa de
+        cobertura, que é risco regulatório.</p>
+        <p class="done"><b>Pronto quando</b> uma bateria de mensagens geradas passar na
+        conferência sem número inventado nem estouro de limite.</p>
+      </div>
+
+      <div class="task">
+        <div class="task-top"><span class="tid">C.4</span></div>
+        <p class="task-name">Fallback sem LLM</p>
+        <p>Modelo de mensagem por template para quando a API do LLM falhar ou a cota
+        estourar. Vale ouro no dia da apresentação.</p>
+        <p class="done"><b>Pronto quando</b> a demonstração completa rodar com a chave de
+        API removida.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- FRENTE D -->
+  <div class="phase">
+    <div class="phase-head">
+      <span class="phase-tag par">Frente D</span>
+      <h3 class="phase-title">Simulação de envio e demonstração</h3>
+      <span class="phase-when">Dias 6–15</span>
+    </div>
+    <p class="phase-note">
+      Atende a “simular o envio das notificações” e “permitir demonstrar o fluxo
+      completo da solução”.
+    </p>
+
+    <div class="tasks">
+      <div class="task">
+        <div class="task-top"><span class="tid">D.1</span></div>
+        <p class="task-name">Caixa de saída simulada</p>
+        <p>Registrar cada notificação com destinatário, canal, evento, mensagem,
+        timestamp e status. Nada é enviado de verdade — o enunciado dispensa
+        explicitamente o envio real.</p>
+        <p class="done"><b>Pronto quando</b> uma execução deixar um registro auditável de
+        tudo que “sairia”.</p>
+      </div>
+
+      <div class="task">
+        <div class="task-top"><span class="tid">D.2</span></div>
+        <p class="task-name">Modo cenário forçado</p>
+        <p>Injetar condições climáticas extremas sem depender do tempo real. Sem isso,
+        um dia de céu limpo na apresentação significa nenhum evento e nenhuma mensagem
+        para mostrar.</p>
+        <p class="done"><b>Pronto quando</b> qualquer cenário de F0.1 puder ser
+        disparado sob encomenda.</p>
+      </div>
+
+      <div class="task">
+        <div class="task-top"><span class="tid">D.3</span></div>
+        <p class="task-name">Interface de demonstração</p>
+        <p>Streamlit mostrando as quatro etapas em sequência: previsão obtida, eventos
+        detectados, segurados selecionados e mensagens geradas. O fluxo tem que ser
+        visível, não inferido.</p>
+        <p class="done"><b>Pronto quando</b> alguém de fora do grupo entender o
+        encadeamento só olhando a tela.</p>
+      </div>
+
+      <div class="task">
+        <div class="task-top"><span class="tid">D.4</span></div>
+        <p class="task-name">Demonstração por linha de comando</p>
+        <p>Script que executa tudo de ponta a ponta e imprime o resultado — serve de
+        teste de integração e gera as evidências que vão para o relatório.</p>
+        <p class="done"><b>Pronto quando</b> um comando produzir o conjunto de mensagens
+        de exemplo pronto para colar.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- FRENTE E -->
+  <div class="phase">
+    <div class="phase-head">
+      <span class="phase-tag par">Frente E</span>
+      <h3 class="phase-title">Documentação e entrega</h3>
+      <span class="phase-when">Dias 3–20 · contínuo</span>
+    </div>
+    <p class="phase-note">
+      Começa junto com as outras frentes, não no fim. Cobre os três entregáveis e o
+      critério “organização da documentação”.
+    </p>
+
+    <div class="tasks">
+      <div class="task">
+        <div class="task-top"><span class="tid">E.1</span></div>
+        <p class="task-name">README exigido pelo enunciado</p>
+        <p>Instruções de instalação e execução, e menção explícita à licença MIT. São
+        requisitos nomeados nas observações importantes — não é o README genérico.</p>
+        <p class="done"><b>Pronto quando</b> alguém de fora conseguir instalar e rodar
+        seguindo só o README.</p>
+      </div>
+
+      <div class="task">
+        <div class="task-top"><span class="tid">E.2</span></div>
+        <p class="task-name">Diagrama de arquitetura</p>
+        <p>O caminho do dado, da API até a mensagem, passando pelos quatro agentes.
+        Se for ASCII, usar apenas caracteres simples — caracteres de caixa somem na
+        conversão para PDF, como aconteceu no Desafio 4.</p>
+        <p class="done"><b>Pronto quando</b> o diagrama sobreviver à exportação em PDF
+        sem perder bordas.</p>
+      </div>
+
+      <div class="task">
+        <div class="task-top"><span class="tid">E.3</span></div>
+        <p class="task-name">Relatório técnico</p>
+        <p>As cinco seções pedidas: arquitetura, descrição dos agentes, tecnologias
+        utilizadas, fluxo de processamento e exemplos de mensagens geradas.</p>
+        <span class="dep">consome saídas de B.4 e D.4</span>
+        <p class="done"><b>Pronto quando</b> cada uma das cinco seções existir e nenhuma
+        estiver marcada como pendente.</p>
+      </div>
+
+      <div class="task">
+        <div class="task-top"><span class="tid">E.4</span></div>
+        <p class="task-name">Galeria de mensagens por cenário</p>
+        <p>O enunciado pede “demonstrar diferentes tipos de mensagens para diferentes
+        cenários”. Reunir um exemplo real por cenário de F0.1, com o evento que o
+        disparou ao lado.</p>
+        <p class="done"><b>Pronto quando</b> houver uma mensagem gerada por cenário, cada
+        uma com sua origem rastreável.</p>
+      </div>
+    </div>
+  </div>
+
+  <h2><span class="n">06</span>Fase 2 — Integração</h2>
+  <p class="sub">
+    O momento em que as frentes se encontram. Reserve tempo real para isso: é onde
+    aparecem as divergências de contrato que ninguém previu.
+  </p>
+
+  <div class="phase">
+    <div class="phase-head">
+      <span class="phase-tag">Fase 2</span>
+      <h3 class="phase-title">Costura e endurecimento</h3>
+      <span class="phase-when">Dias 16–19</span>
+    </div>
+
+    <div class="tasks">
+      <div class="task">
+        <div class="task-top"><span class="tid">I.1</span></div>
+        <p class="task-name">Fluxo real ponta a ponta</p>
+        <p>Substituir todos os dados de mentira pelos módulos reais e rodar o caminho
+        completo: API → evento → regra → mensagem → caixa de saída.</p>
+        <p class="done"><b>Pronto quando</b> uma execução limpa gerar notificações a
+        partir de previsão real, sem intervenção manual.</p>
+      </div>
+
+      <div class="task">
+        <div class="task-top"><span class="tid">I.2</span></div>
+        <p class="task-name">Bateria de cenários</p>
+        <p>Rodar todos os cenários de F0.1 e conferir manualmente se cada decisão de
+        notificar faz sentido. Verificar também o caso “nenhum evento” — silêncio
+        também é resposta correta.</p>
+        <p class="done"><b>Pronto quando</b> cada cenário tiver sido conferido por alguém
+        que não escreveu a regra.</p>
+      </div>
+
+      <div class="task">
+        <div class="task-top"><span class="tid">I.3</span></div>
+        <p class="task-name">Revisão de segurança</p>
+        <p>Confirmar que nenhuma chave está no código, no histórico do Git ou no ZIP.
+        Atenção ao histórico: um <code>.env</code> commitado por engano continua lá
+        mesmo depois de apagado.</p>
+        <p class="done"><b>Pronto quando</b> uma busca por padrões de chave no repositório
+        e no pacote não retornar nada.</p>
+      </div>
+    </div>
+  </div>
+
+  <h2><span class="n">07</span>Fase 3 — Entrega</h2>
+
+  <div class="phase">
+    <div class="phase-head">
+      <span class="phase-tag">Fase 3</span>
+      <h3 class="phase-title">Empacotamento e envio</h3>
+      <span class="phase-when">Dias 20–22 · nunca no dia 23</span>
+    </div>
+
+    <div class="tasks">
+      <div class="task">
+        <div class="task-top"><span class="tid">Z.1</span></div>
+        <p class="task-name">Gerar o PDF do relatório</p>
+        <p>Reaproveitar o <code>scripts/gerar_pdf.py</code> do Desafio 4. Conferir o
+        resultado renderizado, não só o texto extraído.</p>
+        <p class="done"><b>Pronto quando</b> o PDF estiver revisado página por página,
+        sem sobras de rascunho.</p>
+      </div>
+
+      <div class="task">
+        <div class="task-top"><span class="tid">Z.2</span></div>
+        <p class="task-name">Gerar o ZIP do código</p>
+        <p>Reaproveitar o <code>scripts/gerar_entrega.py</code>, que já exclui ambiente
+        virtual e cache e aborta se encontrar credencial.</p>
+        <p class="done"><b>Pronto quando</b> o ZIP extraído em pasta limpa rodar sem
+        depender de nada externo.</p>
+      </div>
+
+      <div class="task">
+        <div class="task-top"><span class="tid">Z.3</span></div>
+        <p class="task-name">Conferir o repositório</p>
+        <p>Abrir o link do GitHub numa janela anônima para provar que o acesso é
+        realmente público, com README e LICENSE visíveis.</p>
+        <p class="done"><b>Pronto quando</b> o repositório abrir sem login.</p>
+      </div>
+
+      <div class="task">
+        <div class="task-top"><span class="tid">Z.4</span></div>
+        <p class="task-name">Enviar</p>
+        <p>PDF, ZIP e link do repositório, enviados pela representante do grupo.
+        Depois, revogar as chaves de API que tiverem circulado.</p>
+        <p class="done"><b>Pronto quando</b> houver confirmação de recebimento.</p>
+      </div>
+    </div>
+  </div>
+
+  <h2><span class="n">08</span>Rastreabilidade: requisito → tarefa</h2>
+  <p class="sub">
+    Cada exigência do enunciado com a tarefa que a cumpre. Use como lista de conferência
+    final — se toda linha estiver coberta, a entrega está completa.
+  </p>
+
+  <div class="scroll">
+    <table>
+      <thead>
+        <tr><th>Exigência do enunciado</th><th>Tarefas</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>Consumir pelo menos uma API pública de meteorologia</td><td class="ids">A.1 · A.2 · A.4</td></tr>
+        <tr><td>Identificar automaticamente eventos climáticos relevantes</td><td class="ids">A.3 · B.2</td></tr>
+        <tr><td>Aplicar regras de decisão sobre quem notificar</td><td class="ids">B.1 · B.3 · B.4</td></tr>
+        <tr><td>Gerar mensagens personalizadas com IA ou LLM</td><td class="ids">C.2 · C.3 · C.4</td></tr>
+        <tr><td>Simular o envio das notificações</td><td class="ids">D.1</td></tr>
+        <tr><td>Demonstrar o fluxo completo da solução</td><td class="ids">D.2 · D.3 · D.4 · I.1</td></tr>
+        <tr><td>Relatório: arquitetura da solução</td><td class="ids">E.2 · E.3</td></tr>
+        <tr><td>Relatório: descrição dos agentes</td><td class="ids">C.1 · E.3</td></tr>
+        <tr><td>Relatório: tecnologias utilizadas</td><td class="ids">E.3</td></tr>
+        <tr><td>Relatório: fluxo de processamento</td><td class="ids">E.2 · E.3</td></tr>
+        <tr><td>Relatório: exemplos das mensagens geradas</td><td class="ids">D.4 · E.4</td></tr>
+        <tr><td>ZIP com todo o código-fonte</td><td class="ids">Z.2</td></tr>
+        <tr><td>Repositório GitHub com acesso público</td><td class="ids">F0.3 · Z.3</td></tr>
+        <tr><td>README com instalação, execução e licença MIT</td><td class="ids">F0.3 · E.1</td></tr>
+        <tr><td>Ocultar chaves de API e credenciais</td><td class="ids">F0.3 · F0.4 · I.3</td></tr>
+        <tr><td>Separar coleta, processamento, decisão e comunicação</td><td class="ids">C.1 · F0.2</td></tr>
+        <tr><td>Agentes especializados por responsabilidade</td><td class="ids">C.1</td></tr>
+        <tr><td>Diferentes mensagens para diferentes cenários</td><td class="ids">C.2 · E.4 · I.2</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h2><span class="n">09</span>Divisão sugerida</h2>
+  <p class="sub">
+    Uma frente por pessoa, com o teto de tarefas equilibrado. É sugestão — ajustem por
+    interesse e experiência de cada um.
+  </p>
+
+  <div class="scroll">
+    <table>
+      <thead>
+        <tr><th>Integrante</th><th>Frente</th><th>Tarefas</th><th>Por quê</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td class="who">Daniel Ramon</td>
+          <td>A — Coleta meteorológica</td>
+          <td class="ids">A.1–A.4</td>
+          <td>Já conhece o código do Desafio 4, que dá a base de configuração e cache.</td>
+        </tr>
+        <tr>
+          <td class="who">Paulo Henrique</td>
+          <td>B — Segurados e regras</td>
+          <td class="ids">B.1–B.4</td>
+          <td>Trabalha com seguros: define quais eventos importam para cada apólice e
+          sustenta a justificativa das regras no relatório.</td>
+        </tr>
+        <tr>
+          <td class="who">Nicole Paes</td>
+          <td>C — Agentes e mensagens</td>
+          <td class="ids">C.1–C.4</td>
+          <td>Tem mais experiência com LLM, e esta frente concentra o item de maior peso
+          no critério de uso de IA.</td>
+        </tr>
+        <tr>
+          <td class="who">Paulo Roberto</td>
+          <td>D — Simulação e demonstração</td>
+          <td class="ids">D.1–D.4</td>
+          <td>Dono da apresentação: o modo cenário forçado é o que garante a demo.</td>
+        </tr>
+        <tr>
+          <td class="who">Juliana Catarina</td>
+          <td>E — Documentação e entrega</td>
+          <td class="ids">E.1–E.4 · Z.1–Z.4</td>
+          <td>Representante do grupo, portanto responsável natural pelo envio final.</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <p class="sub" style="margin-top:18px">
+    A Fase 0 é dos cinco. A Fase 2 também: integração feita por uma pessoa só é
+    integração que esconde problema.
+  </p>
+
+  <div class="foot">
+    Plano derivado do enunciado oficial (páginas 16 a 20 de <em>Desafios 3, 4, 5 e
+    Projeto final</em>). Fonte de dados e limitação de granizo verificadas por chamada
+    real à API em 21/08/2026.
+  </div>
+
+</div>
+<style>
+/* ---------- versão impressa: mesma fonte, destino papel ---------- */
+@media print {
+  :root {
+    --ground:#ffffff; --surface:#ffffff; --surface-2:#f2f6f9;
+    --ink:#0f1f2b; --ink-2:#3d5261; --ink-3:#677f8d;
+    --line:#c6d3dc; --line-soft:#e2e9ef;
+    --accent:#0a6b8a; --accent-soft:#e6f1f6;
+    --warn:#8d5006; --warn-soft:#fdf3e3;
+    --crit:#8d2e23; --crit-soft:#fbeae7;
+    --ok:#21583a;  --ok-soft:#e8f3ed;
+  }
+  @page { size: A4; margin: 12mm 11mm; }
+  * { print-color-adjust: exact; -webkit-print-color-adjust: exact; }
+
+  body { background:#fff; font-size:9pt; line-height:1.38; }
+  .wrap { max-width:none; padding:0; }
+
+  h1 { font-size:21pt; }
+  .lede { font-size:10.5pt; }
+  .meta { gap:6pt 18pt; margin-top:11pt; }
+  .meta-v { font-size:12.5pt; }
+
+  h2 { font-size:13.5pt; margin:15pt 0 4pt; break-after:avoid; page-break-after:avoid; }
+  .sub { font-size:9.5pt; }
+
+  .phase { margin-top:12pt; }
+  .phase-head { break-after:avoid; page-break-after:avoid; }
+  .phase-title { font-size:13pt; }
+  .phase-note { font-size:9pt; }
+
+  .tasks { grid-template-columns:1fr 1fr; gap:6pt; margin-top:9pt; }
+  .task { padding:7pt 9pt; gap:4pt; break-inside:avoid; page-break-inside:avoid; }
+  .task-name { font-size:10.5pt; }
+  .task p { font-size:8.5pt; }
+  .done { font-size:8pt; padding-top:5pt; }
+
+  .note { break-inside:avoid; page-break-inside:avoid; }
+  .note, .find { padding:9pt 12pt; margin:11pt 0; }
+  /* .find contém bloco de código e é alto: deixar fluir evita meia página vazia */
+  .find { break-inside:auto; page-break-inside:auto; }
+  .find-t, .note-t { break-after:avoid; page-break-after:avoid; }
+  pre { break-inside:avoid; page-break-inside:avoid; }
+  .note p, .find p { font-size:9pt; }
+  .note-t, .find-t { font-size:11pt; }
+
+  pre { font-size:7.8pt; padding:8pt 10pt; }
+  table { font-size:8.4pt; break-inside:avoid; page-break-inside:avoid; }
+  th, td { padding:5pt 7pt; }
+  .scroll { overflow:visible; }
+
+  .foot { margin-top:6pt; font-size:8.5pt; break-before:avoid; page-break-before:avoid; }
+}
+</style>

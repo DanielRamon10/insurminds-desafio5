@@ -1,0 +1,18 @@
+# Nucleo
+requests>=2.32
+python-dotenv>=1.0
+pandas>=2.2
+
+# Interface e graficos
+streamlit>=1.40
+matplotlib>=3.8
+
+# Framework de agentes
+langchain>=1.0
+langchain-core>=1.0
+pydantic>=2.7
+
+# Provedor de LLM (padrao: Google Gemini, camada gratuita)
+langchain-google-genai>=2.0
+# langchain-anthropic>=0.3.0
+# langchain-openai>=0.2.0

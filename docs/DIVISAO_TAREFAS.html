@@ -1,0 +1,292 @@
+<title>Divisão de Tarefas do Desafio 5</title>
+<style>
+  :root {
+    --paper:#ffffff; --panel:#f4f8fa; --ink:#0f1f2b; --ink-2:#3d5261; --ink-3:#6b8290;
+    --line:#c9d6df; --line-2:#e3eaef; --accent:#0a6b8a; --accent-soft:#e4f0f5;
+    --warn:#8d5006; --warn-soft:#fdf3e3; --warn-chip:#f7e6cd; --ok:#21583a;
+    --display: Candara, Optima, "Gill Sans MT", "Trebuchet MS", "Segoe UI", sans-serif;
+    --body: "Segoe UI", system-ui, -apple-system, sans-serif;
+    --mono: "Cascadia Mono", Consolas, "SF Mono", ui-monospace, monospace;
+  }
+
+  @page { size: A4; margin: 11mm 10mm; }
+
+  * { box-sizing: border-box; print-color-adjust: exact; -webkit-print-color-adjust: exact; }
+
+  body {
+    margin: 0;
+    background: var(--paper);
+    color: var(--ink);
+    font-family: var(--body);
+    font-size: 9pt;
+    line-height: 1.35;
+  }
+
+  .sheet { max-width: 200mm; margin: 0 auto; padding: 6mm 4mm; }
+
+  header { border-bottom: 2px solid var(--ink); padding-bottom: 7pt; margin-bottom: 10pt; }
+
+  .kicker {
+    font-family: var(--mono);
+    font-size: 7.5pt;
+    letter-spacing: .13em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin: 0 0 4pt;
+  }
+
+  .head-row { display: flex; align-items: flex-end; gap: 15pt; }
+
+  h1 {
+    font-family: var(--display);
+    font-size: 19pt;
+    font-weight: 600;
+    letter-spacing: -.01em;
+    margin: 0;
+    flex: 1;
+  }
+
+  .stat { text-align: right; flex-shrink: 0; }
+
+  .stat-k {
+    font-family: var(--mono);
+    font-size: 7pt;
+    letter-spacing: .1em;
+    text-transform: uppercase;
+    color: var(--ink-3);
+    display: block;
+  }
+
+  .stat-v {
+    font-family: var(--display);
+    font-size: 13pt;
+    font-weight: 600;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .stat-v.hot { color: var(--warn); }
+
+  .band {
+    display: grid;
+    grid-template-columns: 47mm 1fr;
+    border: 1px solid var(--line);
+    border-radius: 4px;
+    margin-bottom: 5.5pt;
+    overflow: hidden;
+    break-inside: avoid;
+    page-break-inside: avoid;
+  }
+
+  .who {
+    background: var(--panel);
+    padding: 7pt 9pt;
+    border-right: 1px solid var(--line);
+  }
+
+  .who-name {
+    font-family: var(--display);
+    font-size: 12.5pt;
+    font-weight: 600;
+    line-height: 1.12;
+    margin: 0 0 2pt;
+  }
+
+  .who-front {
+    font-size: 8.4pt;
+    font-weight: 600;
+    color: var(--accent);
+    margin: 0 0 4pt;
+  }
+
+  .who-when {
+    font-family: var(--mono);
+    font-size: 7.5pt;
+    color: var(--ink-3);
+    display: block;
+  }
+
+  .who-count {
+    font-family: var(--mono);
+    font-size: 7.5pt;
+    color: var(--ink-3);
+    display: block;
+    margin-top: 1.5pt;
+  }
+
+  .jobs {
+    padding: 7pt 9pt;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 3.5pt 12pt;
+    align-content: center;
+  }
+
+  .job { display: flex; gap: 6pt; align-items: baseline; }
+
+  .jid {
+    font-family: var(--mono);
+    font-size: 7.5pt;
+    font-weight: 600;
+    color: var(--accent);
+    background: var(--accent-soft);
+    padding: 1.5pt 4pt;
+    border-radius: 2px;
+    flex-shrink: 0;
+    min-width: 27pt;
+    text-align: center;
+  }
+
+  .jname { font-size: 8.7pt; }
+  .jname em { font-style: normal; font-size: 7.8pt; color: var(--ink-3); }
+
+  .band.shared { border-color: var(--warn); background: var(--warn-soft); }
+  .band.shared .who { background: transparent; border-right-color: var(--warn); }
+  .band.shared .who-front { color: var(--warn); }
+  .band.shared .jid { color: var(--warn); background: var(--warn-chip); }
+
+  .tail {
+    margin-top: 8pt;
+    padding-top: 6pt;
+    border-top: 1px solid var(--line-2);
+    font-size: 8pt;
+    color: var(--ink-3);
+    display: flex;
+    gap: 20pt;
+  }
+
+  .tail b {
+    font-family: var(--mono);
+    font-size: 7.5pt;
+    letter-spacing: .08em;
+    text-transform: uppercase;
+    color: var(--ok);
+    margin-right: 4pt;
+  }
+</style>
+
+<div class="sheet">
+
+  <header>
+    <p class="kicker">I2A2 · Insurminds · Desafio 5 · comunicação proativa com o segurado</p>
+    <div class="head-row">
+      <h1>Divisão de tarefas por pessoa</h1>
+      <div class="stat"><span class="stat-k">Entrega</span><span class="stat-v">13/09/2026</span></div>
+      <div class="stat"><span class="stat-k">Dias</span><span class="stat-v hot">23</span></div>
+      <div class="stat"><span class="stat-k">Tarefas</span><span class="stat-v">31</span></div>
+    </div>
+  </header>
+
+  <div class="band shared">
+    <div class="who">
+      <p class="who-name">Os cinco juntos</p>
+      <p class="who-front">Fase 0 — Fundação</p>
+      <span class="who-when">Dias 1–2</span>
+      <span class="who-count">F0.1 decidida · 3 restantes</span>
+    </div>
+    <div class="jobs">
+      <div class="job"><span class="jid">F0.1</span><span class="jname">Cenários <em>— decidido; faltam as cidades</em></span></div>
+      <div class="job"><span class="jid">F0.2</span><span class="jname">Congelar os contratos de dados</span></div>
+      <div class="job"><span class="jid">F0.3</span><span class="jname">Repositório público com licença MIT</span></div>
+      <div class="job"><span class="jid">F0.4</span><span class="jname">Provedor de LLM e chaves</span></div>
+    </div>
+  </div>
+
+  <div class="band">
+    <div class="who">
+      <p class="who-name">Daniel Ramon</p>
+      <p class="who-front">Frente A — Coleta meteorológica</p>
+      <span class="who-when">Dias 3–10</span>
+      <span class="who-count">4 tarefas</span>
+    </div>
+    <div class="jobs">
+      <div class="job"><span class="jid">A.1</span><span class="jname">Cliente da Open-Meteo</span></div>
+      <div class="job"><span class="jid">A.2</span><span class="jname">Cache e tolerância a falha</span></div>
+      <div class="job"><span class="jid">A.3</span><span class="jname">Normalizador de resposta</span></div>
+      <div class="job"><span class="jid">A.4</span><span class="jname">Alertas do INMET <em>— opcional</em></span></div>
+    </div>
+  </div>
+
+  <div class="band">
+    <div class="who">
+      <p class="who-name">Paulo Henrique</p>
+      <p class="who-front">Frente B — Segurados e regras</p>
+      <span class="who-when">Dias 3–12</span>
+      <span class="who-count">4 tarefas</span>
+    </div>
+    <div class="jobs">
+      <div class="job"><span class="jid">B.1</span><span class="jname">Base sintética de segurados</span></div>
+      <div class="job"><span class="jid">B.2</span><span class="jname">Classificador de eventos</span></div>
+      <div class="job"><span class="jid">B.3</span><span class="jname">Motor de regras</span></div>
+      <div class="job"><span class="jid">B.4</span><span class="jname">Justificar cada limiar</span></div>
+    </div>
+  </div>
+
+  <div class="band">
+    <div class="who">
+      <p class="who-name">Nicole Paes</p>
+      <p class="who-front">Frente C — Agentes e mensagens</p>
+      <span class="who-when">Dias 5–14</span>
+      <span class="who-count">4 tarefas</span>
+    </div>
+    <div class="jobs">
+      <div class="job"><span class="jid">C.1</span><span class="jname">Estrutura dos agentes e orquestrador</span></div>
+      <div class="job"><span class="jid">C.2</span><span class="jname">Agente redator com LLM</span></div>
+      <div class="job"><span class="jid">C.3</span><span class="jname">Guardrails da mensagem</span></div>
+      <div class="job"><span class="jid">C.4</span><span class="jname">Fallback sem LLM</span></div>
+    </div>
+  </div>
+
+  <div class="band">
+    <div class="who">
+      <p class="who-name">Paulo Roberto</p>
+      <p class="who-front">Frente D — Simulação e demonstração</p>
+      <span class="who-when">Dias 6–15</span>
+      <span class="who-count">4 tarefas</span>
+    </div>
+    <div class="jobs">
+      <div class="job"><span class="jid">D.1</span><span class="jname">Caixa de saída simulada</span></div>
+      <div class="job"><span class="jid">D.2</span><span class="jname">Modo cenário forçado</span></div>
+      <div class="job"><span class="jid">D.3</span><span class="jname">Interface de demonstração</span></div>
+      <div class="job"><span class="jid">D.4</span><span class="jname">Demonstração por linha de comando</span></div>
+    </div>
+  </div>
+
+  <div class="band">
+    <div class="who">
+      <p class="who-name">Juliana Catarina</p>
+      <p class="who-front">Frente E — Documentação e entrega</p>
+      <span class="who-when">Dias 3–22 · contínuo</span>
+      <span class="who-count">8 tarefas · representante</span>
+    </div>
+    <div class="jobs">
+      <div class="job"><span class="jid">E.1</span><span class="jname">README com instalação e licença MIT</span></div>
+      <div class="job"><span class="jid">Z.1</span><span class="jname">Gerar o PDF do relatório</span></div>
+      <div class="job"><span class="jid">E.2</span><span class="jname">Diagrama de arquitetura</span></div>
+      <div class="job"><span class="jid">Z.2</span><span class="jname">Gerar o ZIP do código</span></div>
+      <div class="job"><span class="jid">E.3</span><span class="jname">Relatório técnico</span></div>
+      <div class="job"><span class="jid">Z.3</span><span class="jname">Conferir o repositório público</span></div>
+      <div class="job"><span class="jid">E.4</span><span class="jname">Galeria de mensagens por cenário</span></div>
+      <div class="job"><span class="jid">Z.4</span><span class="jname">Enviar PDF, ZIP e link</span></div>
+    </div>
+  </div>
+
+  <div class="band shared">
+    <div class="who">
+      <p class="who-name">Os cinco juntos</p>
+      <p class="who-front">Fase 2 — Integração</p>
+      <span class="who-when">Dias 16–19</span>
+      <span class="who-count">nunca de uma pessoa só</span>
+    </div>
+    <div class="jobs">
+      <div class="job"><span class="jid">I.1</span><span class="jname">Fluxo real ponta a ponta</span></div>
+      <div class="job"><span class="jid">I.2</span><span class="jname">Bateria de cenários</span></div>
+      <div class="job"><span class="jid">I.3</span><span class="jname">Revisão de segurança das chaves</span></div>
+    </div>
+  </div>
+
+  <div class="tail">
+    <span><b>Dependência crítica</b>B.2 e B.3 alimentam o prompt de C.2 — combinem o formato na F0.2.</span>
+    <span><b>Detalhe completo</b>ROTEIRO_DESAFIO5.pdf</span>
+  </div>
+
+</div>
