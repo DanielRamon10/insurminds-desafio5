@@ -16,3 +16,6 @@ pydantic>=2.7
 langchain-google-genai>=2.0
 # langchain-anthropic>=0.3.0
 # langchain-openai>=0.2.0
+
+# Testes
+pytest>=8.0

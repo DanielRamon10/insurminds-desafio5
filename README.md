@@ -83,6 +83,7 @@ credencial aparece no código-fonte.
 ```bash
 streamlit run streamlit_app.py     # interface de demonstração
 python scripts/demo.py             # fluxo completo por linha de comando
+python -m pytest tests/ -v         # testes dos contratos de dados
 ```
 
 > Em construção. Consulte o roteiro do projeto em [`docs/`](docs/) para o estado
