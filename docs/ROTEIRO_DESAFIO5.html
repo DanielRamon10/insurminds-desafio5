@@ -377,6 +377,8 @@
   li { margin: 4px 0; color: var(--ink-2); font-size: 14.5px; }
   li strong { color: var(--ink); }
 
+  .head-nota { display: none; font-size: 8pt; color: var(--ink-3); margin: 8pt 0 0; }
+
   .foot {
     margin-top: 64px;
     padding-top: 18px;
@@ -419,6 +421,9 @@
         <span class="meta-v">5</span>
       </div>
     </div>
+    <p class="head-nota">Plano derivado do enunciado oficial (páginas 16 a 20 de
+    <em>Desafios 3, 4, 5 e Projeto final</em>). Fonte de dados, detecção de raio,
+    limiares e nível de congelamento verificados por chamada real à API.</p>
   </header>
 
   <h2><span class="n">01</span>Antes de dividir: três coisas que mudam</h2>
@@ -577,26 +582,28 @@
 
   <h2><span class="n">04</span>Fase 0 — Fundação</h2>
   <p class="sub">
-    Decisões que <strong>bloqueiam todo o resto</strong>. A F0.1 já saiu; as três
-    restantes, feitas numa única reunião, destravam as cinco frentes.
+    <strong>Concluída.</strong> As quatro decisões saíram e estão no repositório: a
+    matriz de cenários, os contratos de dados em <code>app/schemas.py</code>, o
+    repositório público com licença MIT e o provedor de LLM em
+    <code>app/config.py</code>. As cinco frentes estão livres para começar.
   </p>
 
   <div class="phase">
     <div class="phase-head">
       <span class="phase-tag">Fase 0</span>
       <h3 class="phase-title">Contratos e alicerce</h3>
-      <span class="phase-when">Dias 1–2 · 3 de 4 pendentes</span>
+      <span class="phase-when">Dias 1–2 · concluída</span>
     </div>
 
     <div class="tasks">
       <div class="task">
         <div class="task-top"><span class="tid">F0.1</span></div>
         <p class="task-name">Escolher os cenários de negócio</p>
-        <p><strong>Decidido pelo grupo:</strong> duas apólices (residencial e
-        automotiva) e quatro eventos (chuva intensa, raio, vento forte e granizo). A matriz
-        resultante está na seção 03.</p>
-        <p class="done"><b>Concluída</b> restam as cidades monitoradas, item ainda
-        aberto desta mesma decisão.</p>
+        <p><strong>Decidido:</strong> duas apólices (residencial e automotiva) e quatro
+        eventos (chuva intensa, raio, vento forte e granizo) — matriz na seção 03. As 15
+        cidades monitoradas estão em <code>data/cidades.csv</code>.</p>
+        <p class="done"><b>Concluída</b> duas apólices, quatro eventos e sete cenários
+        ativos, fixados como constante em <code>app/schemas.py</code>.</p>
       </div>
 
       <div class="task">
@@ -605,8 +612,8 @@
         <p>Definir os três formatos que atravessam o sistema: <code>Segurado</code>,
         <code>EventoClimatico</code> e <code>Notificacao</code> — nomes de campos, tipos e
         unidades. É isso que permite cinco pessoas programarem ao mesmo tempo.</p>
-        <p class="done"><b>Pronto quando</b> existir um arquivo de schemas que ninguém
-        precise alterar para começar a codar.</p>
+        <p class="done"><b>Concluída</b> <code>app/schemas.py</code>, com 12 testes que
+        também servem de exemplo de uso para as frentes.</p>
       </div>
 
       <div class="task">
@@ -615,8 +622,8 @@
         <p>Repositório no GitHub com acesso público, <code>LICENSE</code> MIT na raiz,
         estrutura de pastas, <code>requirements.txt</code>, <code>.gitignore</code> com
         <code>.env</code> e <code>.env.example</code>.</p>
-        <p class="done"><b>Pronto quando</b> os cinco integrantes tiverem acesso de
-        escrita e o primeiro commit estiver na branch principal.</p>
+        <p class="done"><b>Concluída</b> repositório público, licença MIT reconhecida e
+        <code>main</code> protegida exigindo PR.</p>
       </div>
 
       <div class="task">
@@ -625,8 +632,8 @@
         <p>Reaproveitar o <code>config.py</code> do Desafio 4. O Gemini já está validado e
         tem camada gratuita; cada integrante usa a própria chave localmente, no
         <code>.env</code>.</p>
-        <p class="done"><b>Pronto quando</b> qualquer integrante conseguir rodar uma
-        chamada de teste na própria máquina.</p>
+        <p class="done"><b>Concluída</b> <code>app/config.py</code> com três provedores;
+        cada integrante usa a própria chave no <code>.env</code>.</p>
       </div>
     </div>
   </div>
@@ -752,7 +759,7 @@
     <div class="phase-head">
       <span class="phase-tag par">Frente C</span>
       <h3 class="phase-title">Agentes e geração de mensagens</h3>
-      <span class="phase-when">Dias 5–14</span>
+      <span class="phase-when">Dias 5–14 · Nicole + Juliana</span>
     </div>
     <p class="phase-note">
       Atende a “gerar mensagens personalizadas utilizando IA ou modelos de linguagem”.
@@ -1037,8 +1044,8 @@
 
   <h2><span class="n">09</span>Divisão sugerida</h2>
   <p class="sub">
-    Uma frente por pessoa, com o teto de tarefas equilibrado. É sugestão — ajustem por
-    interesse e experiência de cada um.
+    Uma frente por pessoa. A Juliana aparece duas vezes: as tarefas dela se concentram
+    no fim do cronograma, então até o dia 14 ela reforça a frente mais pesada.
   </p>
 
   <div class="scroll">
@@ -1068,6 +1075,13 @@
           no critério de uso de IA.</td>
         </tr>
         <tr>
+          <td class="who">Juliana Catarina</td>
+          <td>C — apoio, até o dia 14</td>
+          <td class="ids">C.2 · C.3</td>
+          <td>A frente mais pesada recebe reforço enquanto a documentação ainda não
+          começou. E a tarefa E.4 dela é literalmente a saída de C.2.</td>
+        </tr>
+        <tr>
           <td class="who">Paulo Roberto</td>
           <td>D — Simulação e demonstração</td>
           <td class="ids">D.1–D.4</td>
@@ -1077,15 +1091,16 @@
           <td class="who">Juliana Catarina</td>
           <td>E — Documentação e entrega</td>
           <td class="ids">E.1–E.4 · Z.1–Z.4</td>
-          <td>Representante do grupo, portanto responsável natural pelo envio final.</td>
+          <td>Representante do grupo, portanto responsável natural pelo envio final.
+          Concentra-se a partir do dia 15.</td>
         </tr>
       </tbody>
     </table>
   </div>
 
   <p class="sub" style="margin-top:18px">
-    A Fase 0 é dos cinco. A Fase 2 também: integração feita por uma pessoa só é
-    integração que esconde problema.
+    A Fase 2 é dos cinco: integração feita por uma pessoa só é integração que esconde
+    problema. A Fase 0 já está concluída.
   </p>
 
   <div class="foot">
@@ -1110,7 +1125,7 @@
   @page { size: A4; margin: 12mm 11mm; }
   * { print-color-adjust: exact; -webkit-print-color-adjust: exact; }
 
-  body { background:#fff; font-size:9pt; line-height:1.38; }
+  body { background:#fff; font-size:8.7pt; line-height:1.34; }
   .wrap { max-width:none; padding:0; }
 
   h1 { font-size:21pt; }
@@ -1118,15 +1133,15 @@
   .meta { gap:6pt 18pt; margin-top:11pt; }
   .meta-v { font-size:12.5pt; }
 
-  h2 { font-size:13.5pt; margin:15pt 0 4pt; break-after:avoid; page-break-after:avoid; }
+  h2 { font-size:13pt; margin:13pt 0 4pt; break-after:avoid; page-break-after:avoid; }
   .sub { font-size:9.5pt; }
 
-  .phase { margin-top:12pt; }
+  .phase { margin-top:10pt; }
   .phase-head { break-after:avoid; page-break-after:avoid; }
   .phase-title { font-size:13pt; }
   .phase-note { font-size:9pt; }
 
-  .tasks { grid-template-columns:1fr 1fr; gap:6pt; margin-top:9pt; }
+  .tasks { grid-template-columns:1fr 1fr; gap:5pt; margin-top:8pt; }
   .task { padding:7pt 9pt; gap:4pt; break-inside:avoid; page-break-inside:avoid; }
   .task-name { font-size:10.5pt; }
   .task p { font-size:8.5pt; }
@@ -1146,6 +1161,7 @@
   th, td { padding:5pt 7pt; }
   .scroll { overflow:visible; }
 
-  .foot { margin-top:6pt; font-size:8.5pt; break-before:avoid; page-break-before:avoid; }
+  .foot { display:none; }
+  .head-nota { display:block; }
 }
 </style>

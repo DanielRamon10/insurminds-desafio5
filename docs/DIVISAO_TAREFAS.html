@@ -3,7 +3,8 @@
   :root {
     --paper:#ffffff; --panel:#f4f8fa; --ink:#0f1f2b; --ink-2:#3d5261; --ink-3:#6b8290;
     --line:#c9d6df; --line-2:#e3eaef; --accent:#0a6b8a; --accent-soft:#e4f0f5;
-    --warn:#8d5006; --warn-soft:#fdf3e3; --warn-chip:#f7e6cd; --ok:#21583a;
+    --warn:#8d5006; --warn-soft:#fdf3e3; --warn-chip:#f7e6cd;
+    --ok:#21583a; --ok-soft:#eaf3ee; --ok-chip:#d8e9df;
     --display: Candara, Optima, "Gill Sans MT", "Trebuchet MS", "Segoe UI", sans-serif;
     --body: "Segoe UI", system-ui, -apple-system, sans-serif;
     --mono: "Cascadia Mono", Consolas, "SF Mono", ui-monospace, monospace;
@@ -139,6 +140,12 @@
   .jname { font-size: 8.7pt; }
   .jname em { font-style: normal; font-size: 7.8pt; color: var(--ink-3); }
 
+  .band.done { border-color: var(--ok); background: var(--ok-soft); }
+  .band.done .who { background: transparent; border-right-color: var(--ok); }
+  .band.done .who-front { color: var(--ok); }
+  .band.done .jid { color: var(--ok); background: var(--ok-chip); }
+  .band.done .jname { color: var(--ink-3); }
+
   .band.shared { border-color: var(--warn); background: var(--warn-soft); }
   .band.shared .who { background: transparent; border-right-color: var(--warn); }
   .band.shared .who-front { color: var(--warn); }
@@ -176,18 +183,18 @@
     </div>
   </header>
 
-  <div class="band shared">
+  <div class="band done">
     <div class="who">
       <p class="who-name">Os cinco juntos</p>
-      <p class="who-front">Fase 0 — Fundação</p>
+      <p class="who-front">Fase 0 — concluída</p>
       <span class="who-when">Dias 1–2</span>
-      <span class="who-count">F0.1 decidida · 3 restantes</span>
+      <span class="who-count">4 de 4 · frentes liberadas</span>
     </div>
     <div class="jobs">
-      <div class="job"><span class="jid">F0.1</span><span class="jname">Cenários <em>— decidido; faltam as cidades</em></span></div>
-      <div class="job"><span class="jid">F0.2</span><span class="jname">Congelar os contratos de dados</span></div>
-      <div class="job"><span class="jid">F0.3</span><span class="jname">Repositório público com licença MIT</span></div>
-      <div class="job"><span class="jid">F0.4</span><span class="jname">Provedor de LLM e chaves</span></div>
+      <div class="job"><span class="jid">F0.1</span><span class="jname">Cenários <em>— 4 eventos, 7 ativos</em></span></div>
+      <div class="job"><span class="jid">F0.2</span><span class="jname">Contratos <em>— app/schemas.py</em></span></div>
+      <div class="job"><span class="jid">F0.3</span><span class="jname">Repositório <em>— público, MIT</em></span></div>
+      <div class="job"><span class="jid">F0.4</span><span class="jname">Provedor <em>— app/config.py</em></span></div>
     </div>
   </div>
 
@@ -223,10 +230,10 @@
 
   <div class="band">
     <div class="who">
-      <p class="who-name">Nicole Paes</p>
+      <p class="who-name">Nicole Paes<br>+ Juliana</p>
       <p class="who-front">Frente C — Agentes e mensagens</p>
       <span class="who-when">Dias 5–14</span>
-      <span class="who-count">4 tarefas</span>
+      <span class="who-count">a mais pesada · reforçada</span>
     </div>
     <div class="jobs">
       <div class="job"><span class="jid">C.1</span><span class="jname">Estrutura dos agentes e orquestrador</span></div>
@@ -255,7 +262,7 @@
     <div class="who">
       <p class="who-name">Juliana Catarina</p>
       <p class="who-front">Frente E — Documentação e entrega</p>
-      <span class="who-when">Dias 3–22 · contínuo</span>
+      <span class="who-when">A partir do dia 15</span>
       <span class="who-count">8 tarefas · representante</span>
     </div>
     <div class="jobs">
@@ -285,7 +292,7 @@
   </div>
 
   <div class="tail">
-    <span><b>Dependência crítica</b>B.2 e B.3 alimentam o prompt de C.2 — combinem o formato na F0.2.</span>
+    <span><b>Dependência crítica</b>B.2 e B.3 alimentam o prompt de C.2. E a E.4 da Juliana é a saída da C.2 — por isso ela reforça a frente C.</span>
     <span><b>Detalhe completo</b>ROTEIRO_DESAFIO5.pdf</span>
   </div>
 
