@@ -1,0 +1,46 @@
+id,nome,tipo_apolice,cidade,uf,latitude,longitude,canal
+SEG-001,Simone Carvalho Reis,residencial,Porto Alegre,RS,-30.03,-51.23,sms
+SEG-002,Vinicius Pacheco Leal,automotiva,Porto Alegre,RS,-30.03,-51.23,push
+SEG-003,Larissa Fontoura Dias,residencial,Porto Alegre,RS,-30.03,-51.23,email
+SEG-004,Karina Duarte Peixoto,automotiva,Caxias do Sul,RS,-29.17,-51.18,push
+SEG-005,Xavier Nogueira Pires,residencial,Caxias do Sul,RS,-29.17,-51.18,sms
+SEG-006,Joao Pedro Bastos,automotiva,Caxias do Sul,RS,-29.17,-51.18,email
+SEG-007,Camila Esteves Pontes,residencial,Florianopolis,SC,-27.59,-48.55,sms
+SEG-008,Giovana Lacerda Prado,automotiva,Florianopolis,SC,-27.59,-48.55,push
+SEG-009,Mariana Teixeira Couto,residencial,Florianopolis,SC,-27.59,-48.55,email
+SEG-010,Diego Antunes Prado,automotiva,Curitiba,PR,-25.43,-49.27,push
+SEG-011,Hugo Martins Quintela,residencial,Curitiba,PR,-25.43,-49.27,push
+SEG-012,Eliane Barros Nunes,automotiva,Curitiba,PR,-25.43,-49.27,email
+SEG-013,Valeria Nascimento Rios,residencial,Sao Paulo,SP,-23.55,-46.63,push
+SEG-014,Yasmin Cordeiro Beltrao,automotiva,Sao Paulo,SP,-23.55,-46.63,sms
+SEG-015,Leandro Figueira Sampaio,residencial,Sao Paulo,SP,-23.55,-46.63,push
+SEG-016,Felipe Drummond Castro,automotiva,Santos,SP,-23.96,-46.33,sms
+SEG-017,Alice Furtado Neves,residencial,Santos,SP,-23.96,-46.33,sms
+SEG-018,Natalia Berto Assis,automotiva,Santos,SP,-23.96,-46.33,push
+SEG-019,Otavio Pimentel Faria,residencial,Rio de Janeiro,RJ,-22.91,-43.17,sms
+SEG-020,Danilo Rezende Xavier,automotiva,Rio de Janeiro,RJ,-22.91,-43.17,email
+SEG-021,Nelson Aguiar Fontes,residencial,Rio de Janeiro,RJ,-22.91,-43.17,sms
+SEG-022,Zeca Almeida Rangel,automotiva,Belo Horizonte,MG,-19.92,-43.94,sms
+SEG-023,Ursula Batista Amaral,residencial,Belo Horizonte,MG,-19.92,-43.94,sms
+SEG-024,Wanda Ferreira Goulart,automotiva,Belo Horizonte,MG,-19.92,-43.94,email
+SEG-025,Erika Salgado Vieira,residencial,Campo Grande,MS,-20.44,-54.65,email
+SEG-026,Renato Bulhoes Melo,automotiva,Campo Grande,MS,-20.44,-54.65,email
+SEG-027,Ana Beatriz Cardoso,residencial,Campo Grande,MS,-20.44,-54.65,push
+SEG-028,Tiago Monteiro Guedes,automotiva,Goiania,GO,-16.68,-49.25,email
+SEG-029,Queren Lopes Vidal,residencial,Goiania,GO,-16.68,-49.25,sms
+SEG-030,Thiago Arruda Pontes,automotiva,Goiania,GO,-16.68,-49.25,email
+SEG-031,Marcos Vinicius Coelho,residencial,Cuiaba,MT,-15.6,-56.1,email
+SEG-032,Julio Cesar Trindade,automotiva,Cuiaba,MT,-15.6,-56.1,sms
+SEG-033,Sabrina Veloso Tavares,residencial,Cuiaba,MT,-15.6,-56.1,push
+SEG-034,Carla Menezes Rocha,automotiva,Salvador,BA,-12.97,-38.5,email
+SEG-035,Bernardo Cunha Salles,residencial,Salvador,BA,-12.97,-38.5,push
+SEG-036,Fabio Correia Mendes,automotiva,Salvador,BA,-12.97,-38.5,push
+SEG-037,Ines Bandeira Marques,residencial,Recife,PE,-8.05,-34.88,push
+SEG-038,Gabriela Pinto Serra,automotiva,Recife,PE,-8.05,-34.88,sms
+SEG-039,Isabela Moraes Freitas,residencial,Recife,PE,-8.05,-34.88,push
+SEG-040,Olivia Ramos Bittencourt,automotiva,Belem,PA,-1.46,-48.5,push
+SEG-041,Paulo Cesar Andrade,residencial,Belem,PA,-1.46,-48.5,sms
+SEG-042,Rafael Siqueira Braga,automotiva,Belem,PA,-1.46,-48.5,push
+SEG-043,Bruno Tavares Lima,residencial,Manaus,AM,-3.12,-60.02,push
+SEG-044,Henrique Vasques Alves,automotiva,Manaus,AM,-3.12,-60.02,sms
+SEG-045,Priscila Guimaraes Sa,residencial,Manaus,AM,-3.12,-60.02,sms
