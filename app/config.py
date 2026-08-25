@@ -134,7 +134,8 @@ def carregar_cidades(caminho: Path | None = None) -> list[Cidade]:
 
     As coordenadas são reais e foram verificadas contra a API. As regiões
     cobrem perfis climáticos distintos, para que os quatro eventos tenham
-    chance de aparecer.
+    chance de aparecer. O código IBGE vem da API de localidades do próprio
+    IBGE e serve para casar os avisos oficiais do INMET.
     """
     caminho = caminho or DATA_DIR / "cidades.csv"
     if not caminho.is_file():
@@ -147,6 +148,7 @@ def carregar_cidades(caminho: Path | None = None) -> list[Cidade]:
                 uf=linha["uf"],
                 latitude=float(linha["latitude"]),
                 longitude=float(linha["longitude"]),
+                codigo_ibge=(linha.get("codigo_ibge") or "").strip() or None,
             )
             for linha in csv.DictReader(f)
         ]
