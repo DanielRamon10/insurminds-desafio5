@@ -45,7 +45,7 @@ demais condições da tempestade."*
 
 ---
 
-## 2. Pendente de confirmação: granizo + apólice residencial
+## 2. Resolvido: granizo + apólice residencial
 
 A recomendação recebida para **granizo + residencial** trata de veículo:
 
@@ -55,15 +55,17 @@ A recomendação recebida para **granizo + residencial** trata de veículo:
 Isso descreve a apólice **automotiva**, que já tem sua própria recomendação na
 linha seguinte. As outras seis estão corretas e específicas.
 
-Redação proposta para a residencial, marcada como `revisao_pendente: true` no
-`regras.yaml` até o aval do especialista:
+Redação proposta na revisão, para a apólice residencial:
 
 > "Recolha objetos que possam ser danificados em áreas descobertas, evite
 > permanecer sob claraboias, telhas translúcidas ou vidros amplos e mantenha-se
 > afastado de janelas durante a queda de granizo."
 
-**Esta é a única pendência da frente B.** Uma frase confirmada ou reescrita
-fecha a tarefa.
+**Aprovada pelo especialista em 25/08/2026** e ativa no `regras.yaml`. Para
+efeito de atribuição: os limiares e as outras seis recomendações são de autoria
+do especialista; esta frase foi redigida na revisão e por ele validada.
+
+Com isso a frente B não tem mais pendências de definição.
 
 ---
 
@@ -103,6 +105,6 @@ Nenhum comentário registrado nas 45 linhas — a base foi aceita como está.
 | Tarefa | Situação |
 | --- | --- |
 | B.1 Base de segurados | concluída — 45 segurados, base aceita sem ressalvas |
-| B.2 Classificador de eventos | limiares definidos; falta implementar em código |
+| B.2 Classificador de eventos | limiares e combinações definidos; falta implementar em código |
 | B.3 Motor de regras | `data/regras.yaml` — alterável sem tocar em Python |
 | B.4 Justificar cada limiar | concluída — seis justificativas, prontas para o relatório |
