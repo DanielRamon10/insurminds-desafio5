@@ -145,15 +145,12 @@ cenarios:
 
   - evento: granizo
     apolice: residencial
-    # PENDENTE DE CONFIRMAÇÃO — ver docs/FRENTE_B_revisao.md
-    # A recomendação recebida falava de recolher o veículo, que é o caso da
-    # apólice automotiva. A redação abaixo é uma proposta para a residencial e
-    # precisa do aval do especialista antes de valer.
+    # Redação proposta na revisão da planilha e aprovada pelo especialista em
+    # 25/08/2026 — ver docs/FRENTE_B_revisao.md, item 2.
     recomendacao: >-
       Recolha objetos que possam ser danificados em áreas descobertas, evite
       permanecer sob claraboias, telhas translúcidas ou vidros amplos e
       mantenha-se afastado de janelas durante a queda de granizo.
-    revisao_pendente: true
 
   - evento: granizo
     apolice: automotiva
