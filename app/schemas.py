@@ -29,10 +29,10 @@ Decisões embutidas que o grupo deve validar:
 
 from __future__ import annotations
 
-from datetime import datetime
+from datetime import datetime, timedelta
 from enum import Enum
 
-from pydantic import BaseModel, Field, field_validator
+from pydantic import BaseModel, Field, field_validator, model_validator
 
 # ---------------------------------------------------------------------------
 # Vocabulário fechado
@@ -199,6 +199,102 @@ class EventoClimatico(BaseModel):
     def atinge(self, apolice: TipoApolice) -> bool:
         """Se este evento é relevante para o tipo de apólice informado."""
         return (self.tipo, apolice) in CENARIOS_ATIVOS
+
+
+# ---------------------------------------------------------------------------
+# Ponte entre coleta e análise (frente A -> frente B)
+#
+# A previsão bruta não é um evento: é a série horária de onde os eventos são
+# extraídos. Fica aqui, e não dentro do cliente, porque é a interface entre duas
+# frentes — quem classifica não precisa saber de qual API o dado veio.
+# ---------------------------------------------------------------------------
+
+
+class PrevisaoHoraria(BaseModel):
+    """Série horária de uma cidade, já normalizada e com unidades conhecidas.
+
+    As listas são paralelas: o índice i de cada uma corresponde a `horas[i]`.
+    Valores ausentes viram `None` em vez de zero — zero é uma medição válida e
+    confundir os dois falsearia a classificação.
+    """
+
+    cidade: str
+    uf: str = Field(min_length=2, max_length=2)
+    horas: list[datetime]
+    precipitacao_mm: list[float | None]
+    rajada_km_h: list[float | None]
+    codigo_wmo: list[int | None]
+    cape_j_kg: list[float | None]
+    nivel_congelamento_m: list[float | None]
+    fonte: str = "open-meteo"
+    do_cache: bool = False
+
+    @field_validator("uf")
+    @classmethod
+    def _uf_maiuscula(cls, v: str) -> str:
+        return v.upper()
+
+    @model_validator(mode="after")
+    def _series_do_mesmo_tamanho(self) -> "PrevisaoHoraria":
+        n = len(self.horas)
+        for campo in (
+            "precipitacao_mm", "rajada_km_h", "codigo_wmo",
+            "cape_j_kg", "nivel_congelamento_m",
+        ):
+            if len(getattr(self, campo)) != n:
+                raise ValueError(f"{campo} tem tamanho diferente de horas ({n})")
+        if n == 0:
+            raise ValueError("previsao sem nenhuma hora")
+        return self
+
+    @property
+    def local(self) -> str:
+        return f"{self.cidade}/{self.uf}"
+
+    @property
+    def inicio(self) -> datetime:
+        return self.horas[0]
+
+    @property
+    def fim(self) -> datetime:
+        """Fim da janela: o término da última hora, não o seu início.
+
+        A série horária rotula cada valor pelo início da hora — "às 12h choveu
+        X" cobre de 12h a 13h. Sem somar essa hora, uma previsão de um único
+        ponto teria janela de duração zero.
+        """
+        return self.horas[-1] + timedelta(hours=1)
+
+    def agregar(self) -> Medidas:
+        """Condensa a janela inteira nas medidas que as regras avaliam.
+
+        Chuva acumulada soma; as demais tomam o pior valor da janela — exceto o
+        nível de congelamento, onde o pior caso é o MENOR valor (quanto mais
+        baixa a isoterma de 0 °C, maior a chance de o granizo chegar ao solo).
+        """
+        def maior(valores: list[float | None]) -> float | None:
+            presentes = [v for v in valores if v is not None]
+            return max(presentes) if presentes else None
+
+        def menor(valores: list[float | None]) -> float | None:
+            presentes = [v for v in valores if v is not None]
+            return min(presentes) if presentes else None
+
+        chuva = [v for v in self.precipitacao_mm if v is not None]
+        codigos = [c for c in self.codigo_wmo if c is not None]
+
+        return Medidas(
+            precipitacao_mm_h=maior(self.precipitacao_mm),
+            precipitacao_mm_janela=round(sum(chuva), 1) if chuva else None,
+            rajada_km_h=maior(self.rajada_km_h),
+            cape_j_kg=maior(self.cape_j_kg),
+            nivel_congelamento_m=menor(self.nivel_congelamento_m),
+            codigo_wmo=max(codigos) if codigos else None,
+        )
+
+    def codigos_presentes(self) -> set[int]:
+        """Todos os códigos WMO da janela — usado por critérios de lista."""
+        return {c for c in self.codigo_wmo if c is not None}
 
 
 # ---------------------------------------------------------------------------
