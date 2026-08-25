@@ -1,0 +1,162 @@
+# Regras de negócio da frente B — tarefas B.2, B.3 e B.4
+#
+# Limiares e recomendações definidos por Paulo Henrique (especialista em seguros),
+# a partir da planilha docs/FRENTE_B_limiares_e_segurados.xlsx.
+#
+# Este arquivo existe para que as regras possam ser alteradas SEM tocar em código
+# Python — critério de pronto da tarefa B.3. As justificativas em `porque` vão
+# direto para o relatório técnico (tarefa B.4).
+#
+# Unidades: mm (chuva acumulada) · mm/h (intensidade) · km/h (rajada)
+#           J/kg (CAPE, energia convectiva) · m (altitude)
+
+versao: 1
+definido_por: Paulo Henrique
+revisado_em: 2026-08-25
+
+# ---------------------------------------------------------------------------
+# Limiares por evento
+#
+# `atencao` e `alerta` são as duas severidades do contrato (app/schemas.py).
+# Quando um evento tem mais de um critério, `combinacao` diz como avaliá-los.
+# ---------------------------------------------------------------------------
+
+eventos:
+
+  chuva_intensa:
+    combinacao: qualquer   # basta um dos critérios atingir o limiar
+    criterios:
+      - medida: precipitacao_mm_janela
+        rotulo: Chuva acumulada em 24 h
+        unidade: mm
+        atencao: 40
+        alerta: 60
+        porque: >-
+          Julgamento operacional baseado em prevenção de sinistros: a partir de
+          40 mm em 24 h já há potencial de alagamento e infiltração; 60 mm ou
+          mais aumenta significativamente a necessidade de ação imediata.
+      - medida: precipitacao_mm_h
+        rotulo: Chuva na hora mais forte
+        unidade: mm/h
+        atencao: 15
+        alerta: 30
+        porque: >-
+          15 mm/h indica chuva forte localizada; 30 mm/h caracteriza cenário
+          muito intenso, com maior risco de enxurrada e alagamento.
+
+  vento_forte:
+    combinacao: qualquer
+    criterios:
+      - medida: rajada_km_h
+        rotulo: Rajada máxima
+        unidade: km/h
+        atencao: 60
+        alerta: 80
+        porque: >-
+          Rajadas acima de 60 km/h já podem derrubar galhos e causar danos
+          pontuais; acima de 80 km/h o risco de destelhamento, queda de árvores
+          e danos a veículos aumenta.
+
+  raio:
+    combinacao: todos      # exige trovoada confirmada E energia suficiente
+    criterios:
+      - medida: codigo_wmo
+        rotulo: Código de trovoada
+        unidade: código WMO
+        valores_aceitos: [95, 96, 99]
+        porque: >-
+          Os códigos 95, 96 e 99 da Organização Meteorológica Mundial indicam
+          trovoada prevista. É a confirmação de atividade elétrica; os códigos
+          96 e 99 (com granizo) não são preenchidos no Brasil, apenas o 95.
+      - medida: cape_j_kg
+        rotulo: Energia da tempestade (CAPE)
+        unidade: J/kg
+        atencao: 800
+        alerta: 1500
+        porque: >-
+          A partir de 800 J/kg há ambiente favorável a tempestades; acima de
+          1.500 J/kg a instabilidade é mais elevada e merece alerta.
+
+  granizo:
+    combinacao: todos      # energia alta E nível de congelamento baixo
+    criterios:
+      - medida: cape_j_kg
+        rotulo: Energia da tempestade (CAPE)
+        unidade: J/kg
+        atencao: 1500
+        alerta: 2500
+        porque: >-
+          Valores mais altos de CAPE favorecem correntes ascendentes fortes,
+          condição associada à possibilidade de granizo quando combinada a
+          outros fatores meteorológicos.
+      - medida: nivel_congelamento_m
+        rotulo: Altura onde congela
+        unidade: m
+        comparacao: menor_que   # quanto MAIS BAIXO, maior o risco
+        atencao: 3800
+        alerta: 3200
+        porque: >-
+          Quanto mais baixa a altura de congelamento, maior a chance de as
+          pedras de granizo sobreviverem até a superfície. O critério deve ser
+          combinado com instabilidade (CAPE).
+
+# ---------------------------------------------------------------------------
+# Cenários: quais eventos notificam quais apólices, e o que recomendar
+#
+# Sete combinações ativas. Raio + automotiva fica de fora: um automóvel é uma
+# gaiola de Faraday e protege quem está dentro, então não há recomendação
+# preventiva honesta a dar. (Confirmado pelo especialista.)
+# ---------------------------------------------------------------------------
+
+cenarios:
+
+  - evento: chuva_intensa
+    apolice: residencial
+    recomendacao: >-
+      Evite áreas sujeitas a alagamento, mantenha ralos desobstruídos e, se
+      houver risco de entrada de água, proteja objetos e desligue a energia das
+      áreas afetadas.
+
+  - evento: chuva_intensa
+    apolice: automotiva
+    recomendacao: >-
+      Evite estacionar ou trafegar por áreas alagáveis; se possível, deixe o
+      veículo em local alto e seguro e não atravesse ruas com água acumulada.
+
+  - evento: raio
+    apolice: residencial
+    recomendacao: >-
+      Desconecte aparelhos eletrônicos sensíveis da tomada, evite usar
+      equipamentos ligados à rede elétrica durante a tempestade e mantenha-se
+      em local protegido.
+
+  - evento: vento_forte
+    apolice: residencial
+    recomendacao: >-
+      Recolha ou fixe objetos soltos em quintais e varandas, feche portas e
+      janelas e afaste-se de árvores ou estruturas que possam cair.
+
+  - evento: vento_forte
+    apolice: automotiva
+    recomendacao: >-
+      Estacione em local coberto e seguro; durante rajadas fortes, evite
+      estacionar perto de árvores, placas, postes ou outras estruturas
+      instáveis.
+
+  - evento: granizo
+    apolice: residencial
+    # PENDENTE DE CONFIRMAÇÃO — ver docs/FRENTE_B_revisao.md
+    # A recomendação recebida falava de recolher o veículo, que é o caso da
+    # apólice automotiva. A redação abaixo é uma proposta para a residencial e
+    # precisa do aval do especialista antes de valer.
+    recomendacao: >-
+      Recolha objetos que possam ser danificados em áreas descobertas, evite
+      permanecer sob claraboias, telhas translúcidas ou vidros amplos e
+      mantenha-se afastado de janelas durante a queda de granizo.
+    revisao_pendente: true
+
+  - evento: granizo
+    apolice: automotiva
+    recomendacao: >-
+      Recolha o veículo para local coberto nas próximas horas e evite dirigir
+      durante a tempestade de granizo.
