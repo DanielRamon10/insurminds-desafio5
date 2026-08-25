@@ -137,11 +137,26 @@ python -m pytest tests/ -v         # testes dos contratos de dados
 
 ## Fonte de dados
 
-[**Open-Meteo**](https://open-meteo.com) — API pública de previsão
-meteorológica, sem necessidade de cadastro ou chave para uso não comercial.
-Variáveis consumidas: `precipitation`, `wind_gusts_10m`, `weather_code` (códigos
-WMO), `cape` (energia potencial convectiva disponível) e `freezing_level_height`
-(altitude da isoterma de 0 °C, usada para estimar risco de granizo).
+Duas fontes públicas, de naturezas complementares e nenhuma exigindo chave.
+
+### Previsão numérica — [Open-Meteo](https://open-meteo.com)
+
+Fonte primária: entrega os números que o classificador interpreta com os
+limiares definidos pelo especialista. Variáveis consumidas: `precipitation`,
+`wind_gusts_10m`, `weather_code` (códigos WMO), `cape` (energia potencial
+convectiva disponível) e `freezing_level_height` (altitude da isoterma de 0 °C,
+usada para estimar risco de granizo).
+
+### Avisos oficiais — [INMET](https://portal.inmet.gov.br)
+
+Fonte complementar: o Instituto Nacional de Meteorologia já decidiu que há risco
+e publicou o aviso, com riscos e instruções redigidos por órgão público. O
+casamento com as cidades é por **código IBGE**, nunca por nome.
+
+O papel é de enriquecimento, não de validação: um único aviso pode cobrir
+milhares de municípios, então ele afirma algo sobre a *região*, não sobre a
+coordenada da cidade. A ausência de aviso oficial nunca derruba um evento
+classificado, e a presença dele nunca cria um.
 
 ---
 

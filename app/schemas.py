@@ -103,6 +103,9 @@ class Cidade(BaseModel):
     uf: str = Field(min_length=2, max_length=2)
     latitude: float = Field(ge=-90, le=90)
     longitude: float = Field(ge=-180, le=180)
+    #: Código IBGE do município. Usado para casar alertas oficiais do INMET por
+    #: identificador, e não por nome — "Santos" casaria com "Santos Dumont".
+    codigo_ibge: str | None = None
 
     @field_validator("uf")
     @classmethod
@@ -178,6 +181,9 @@ class EventoClimatico(BaseModel):
     fim: datetime
     medidas: Medidas
     fonte: str = "open-meteo"
+    #: Avisos oficiais vigentes para a mesma cidade e janela, quando houver.
+    #: Corroboram a classificação própria; não a substituem.
+    alertas_oficiais: list[AlertaOficial] = Field(default_factory=list)
 
     @field_validator("uf")
     @classmethod
@@ -295,6 +301,36 @@ class PrevisaoHoraria(BaseModel):
     def codigos_presentes(self) -> set[int]:
         """Todos os códigos WMO da janela — usado por critérios de lista."""
         return {c for c in self.codigo_wmo if c is not None}
+
+
+# ---------------------------------------------------------------------------
+# Segunda fonte: alertas oficiais
+#
+# Natureza diferente da previsão numérica: aqui o órgão oficial já decidiu que
+# há risco e publicou o aviso. Não substitui a classificação própria — serve de
+# corroboração, e o texto oficial enriquece a mensagem.
+# ---------------------------------------------------------------------------
+
+
+class AlertaOficial(BaseModel):
+    """Aviso meteorológico emitido por órgão oficial (INMET)."""
+
+    id: str
+    titulo: str                     # "Tempestade", "Baixa Umidade"
+    severidade: str                 # "Perigo", "Perigo Potencial"
+    inicio: datetime
+    fim: datetime
+    riscos: list[str] = Field(default_factory=list)
+    instrucoes: list[str] = Field(default_factory=list)
+    codigos_ibge: set[str] = Field(default_factory=set)
+    fonte: str = "inmet"
+
+    def cobre(self, cidade: Cidade) -> bool:
+        """Se este aviso vale para a cidade, casando por código IBGE."""
+        return bool(cidade.codigo_ibge) and cidade.codigo_ibge in self.codigos_ibge
+
+    def vigente_em(self, momento: datetime) -> bool:
+        return self.inicio <= momento <= self.fim
 
 
 # ---------------------------------------------------------------------------

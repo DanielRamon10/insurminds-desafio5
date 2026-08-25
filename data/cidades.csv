@@ -1,16 +1,16 @@
-nome,uf,latitude,longitude,regiao_climatica
-Porto Alegre,RS,-30.03,-51.23,sul
-Caxias do Sul,RS,-29.17,-51.18,sul
-Florianopolis,SC,-27.59,-48.55,sul
-Curitiba,PR,-25.43,-49.27,sul
-Sao Paulo,SP,-23.55,-46.63,sudeste
-Santos,SP,-23.96,-46.33,litoral
-Rio de Janeiro,RJ,-22.91,-43.17,litoral
-Belo Horizonte,MG,-19.92,-43.94,sudeste
-Campo Grande,MS,-20.44,-54.65,centro-oeste
-Goiania,GO,-16.68,-49.25,centro-oeste
-Cuiaba,MT,-15.60,-56.10,centro-oeste
-Salvador,BA,-12.97,-38.50,litoral
-Recife,PE,-8.05,-34.88,litoral
-Belem,PA,-1.46,-48.50,norte
-Manaus,AM,-3.12,-60.02,norte
+nome,uf,latitude,longitude,regiao_climatica,codigo_ibge
+Porto Alegre,RS,-30.03,-51.23,sul,4314902
+Caxias do Sul,RS,-29.17,-51.18,sul,4305108
+Florianopolis,SC,-27.59,-48.55,sul,4205407
+Curitiba,PR,-25.43,-49.27,sul,4106902
+Sao Paulo,SP,-23.55,-46.63,sudeste,3550308
+Santos,SP,-23.96,-46.33,litoral,3548500
+Rio de Janeiro,RJ,-22.91,-43.17,litoral,3304557
+Belo Horizonte,MG,-19.92,-43.94,sudeste,3106200
+Campo Grande,MS,-20.44,-54.65,centro-oeste,5002704
+Goiania,GO,-16.68,-49.25,centro-oeste,5208707
+Cuiaba,MT,-15.60,-56.10,centro-oeste,5103403
+Salvador,BA,-12.97,-38.50,litoral,2927408
+Recife,PE,-8.05,-34.88,litoral,2611606
+Belem,PA,-1.46,-48.50,norte,1501402
+Manaus,AM,-3.12,-60.02,norte,1302603
