@@ -173,6 +173,14 @@ CSS = """
     line-height:1.55; white-space:pre-wrap;
 }
 
+/* ---------- metadados da notificação (dentro do expander) ---------- */
+.meta-notif {
+    display:flex; align-items:center; flex-wrap:wrap; gap:6px;
+    margin-top:2px; padding:2px 4px;
+}
+.meta-notif .pill { margin-right:0; }
+.meta-txt { color:#64748B; font-size:.8rem; margin-left:6px; }
+
 /* ---------- cartões do fluxo (estado inicial) ---------- */
 .fluxo-card {
     background:#FFF; border:1px solid #E2E8F0; border-radius:14px;
@@ -434,16 +442,20 @@ if executar:
         status_classe = (
             "pill-status-ok" if n.status.value == "simulado" else "pill-status-off"
         )
-        cabecalho = (
-            f"{icone} &nbsp;<strong>{n.segurado_nome}</strong>"
-            f"&nbsp;&nbsp;{_pill(n.canal.value.upper(), canal_classe)}"
-            f"{_pill(sev_rotulo, sev_classe)}"
-        )
-        with st.expander(cabecalho):
+        # O rótulo do expander nao renderiza HTML: cabeçalho em texto simples,
+        # pills e metadados ficam no corpo (st.markdown com HTML permitido).
+        with st.expander(
+            f"{icone} {n.segurado_nome} — {n.canal.value.upper()} · "
+            f"{n.evento.tipo.value.replace('_', ' ')}/{sev_rotulo}"
+        ):
             st.markdown(f'<div class="msg">{n.mensagem}</div>', unsafe_allow_html=True)
-            st.caption(
-                f"regra: `{n.regra_acionada}` · {len(n.mensagem)} caracteres · "
-                f"status: {_pill(n.status.value, status_classe)}"
+            st.markdown(
+                f'<div class="meta-notif">{_pill(n.canal.value.upper(), canal_classe)}'
+                f"{_pill(sev_rotulo, sev_classe)}"
+                f"{_pill(n.status.value, status_classe)}"
+                f'<span class="meta-txt">regra: {n.regra_acionada} · '
+                f"{len(n.mensagem)} caracteres</span></div>",
+                unsafe_allow_html=True,
             )
 
     registros = caixa.carregar_lote()
