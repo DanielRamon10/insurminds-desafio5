@@ -47,8 +47,62 @@ CSS = """
 [data-testid="stSidebar"] {
     background: linear-gradient(180deg, #0B2545 0%, #12365F 100%);
 }
-[data-testid="stSidebar"] * { color: #E7EEF7; }
 [data-testid="stSidebar"] hr { border-color: rgba(231,238,247,.25) !important; }
+
+/* textos da sidebar em tom claro legível */
+[data-testid="stSidebar"] [data-testid="stMarkdownContainer"] *,
+[data-testid="stSidebar"] [data-testid="stWidgetLabel"] p,
+[data-testid="stSidebar"] [data-testid="stRadio"] label,
+[data-testid="stSidebar"] [data-testid="stCheckbox"] label {
+    color: #DCE7F5 !important;
+}
+[data-testid="stSidebar"] [data-testid="stMarkdownContainer"] b,
+[data-testid="stSidebar"] [data-testid="stWidgetLabel"] p strong {
+    color: #FFFFFF !important;
+}
+[data-testid="stSidebar"] [data-testid="stCaptionContainer"],
+[data-testid="stSidebar"] [data-testid="stCaptionContainer"] * {
+    color: #A9C1DC !important;
+}
+
+/* widgets sobre fundo navy: caixa branca com texto escuro (contraste real) */
+[data-testid="stSidebar"] [data-baseweb="select"] > div,
+[data-testid="stSidebar"] [data-baseweb="input"] {
+    background-color: #FFFFFF;
+    border: 1px solid #8FA6C4;
+    border-radius: 10px;
+}
+[data-testid="stSidebar"] [data-baseweb="select"] *,
+[data-testid="stSidebar"] [data-baseweb="input"] * {
+    color: #12263A !important;
+}
+[data-testid="stSidebar"] [data-baseweb="select"] svg { fill: #475569; }
+
+/* chips do multiselect: azul claro com texto navy */
+[data-testid="stSidebar"] [data-baseweb="tag"] {
+    background-color: #DBEAFE;
+    border: 1px solid #93C5FD;
+    border-radius: 8px;
+}
+[data-testid="stSidebar"] [data-baseweb="tag"] *,
+[data-testid="stSidebar"] [data-baseweb="tag"] span {
+    color: #1E3A8A !important;
+}
+[data-testid="stSidebar"] [data-baseweb="tag"] svg { fill: #1E3A8A; }
+
+/* menu suspenso do select (renderiza fora da sidebar, no fim do body) */
+[data-baseweb="popover"] [role="listbox"] {
+    background-color: #FFFFFF;
+    border: 1px solid #CBD5E1;
+    border-radius: 10px;
+}
+[data-baseweb="popover"] [role="listbox"] li {
+    color: #12263A !important;
+}
+[data-baseweb="popover"] [role="listbox"] li:hover,
+[data-baseweb="popover"] [role="listbox"] li[aria-selected="true"] {
+    background-color: #E8F0FE;
+}
 
 /* ---------- botões ---------- */
 .stButton > button {
