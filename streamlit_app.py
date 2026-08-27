@@ -173,6 +173,28 @@ CSS = """
     line-height:1.55; white-space:pre-wrap;
 }
 
+/* ---------- cartões do fluxo (estado inicial) ---------- */
+.fluxo-card {
+    background:#FFF; border:1px solid #E2E8F0; border-radius:14px;
+    padding:18px; height:100%; position:relative; overflow:hidden;
+    box-shadow:0 1px 3px rgba(15,36,57,.06);
+    transition:transform .15s ease, box-shadow .15s ease;
+}
+.fluxo-card:hover { transform:translateY(-3px); box-shadow:0 10px 24px rgba(15,36,57,.12); }
+.fluxo-card::before {
+    content:""; position:absolute; inset:0 0 auto 0; height:4px;
+    background:linear-gradient(90deg,#2F6FED,#1C6DA8);
+}
+.fluxo-num {
+    width:30px; height:30px; border-radius:9px; margin-bottom:10px;
+    background:linear-gradient(135deg,#2F6FED,#1C6DA8); color:#fff;
+    font-weight:800; font-size:15px; display:flex;
+    align-items:center; justify-content:center;
+}
+.fluxo-titulo { font-weight:700; font-size:.95rem; margin:0 0 6px 0; color:#12263A; }
+.fluxo-desc { color:#64748B; font-size:.82rem; line-height:1.5; margin:0; }
+.fluxo-icone { float:right; font-size:1.4rem; margin-left:8px; }
+
 /* ---------- detalhes finos ---------- */
 [data-testid="stExpander"] { border-radius:12px !important; overflow:hidden; }
 [data-testid="stExpander"] summary strong { font-weight:600; }
@@ -299,6 +321,29 @@ if executar:
     )
     st.dataframe(df_previsoes, hide_index=True)
 
+    # Gráfico comparativo das medidas que alimentam a classificação.
+    serie = pd.DataFrame(
+        [
+            {
+                "cidade": p.local.split("/")[0],
+                "precipitação máx. (mm/h)": max(
+                    (v for v in p.precipitacao_mm if v is not None), default=0.0
+                ),
+                "rajada máx. (km/h)": max(
+                    (v for v in p.rajada_km_h if v is not None), default=0.0
+                ),
+            }
+            for p in previsoes
+        ]
+    ).set_index("cidade")
+    if serie["precipitação máx. (mm/h)"].sum() or serie["rajada máx. (km/h)"].sum():
+        st.caption("Medidas por cidade na janela analisada — é isto que os limiares comparam.")
+        esquerda, direita = st.columns(2)
+        if serie["precipitação máx. (mm/h)"].sum():
+            esquerda.bar_chart(serie[["precipitação máx. (mm/h)"]], color="#2F6FED")
+        if serie["rajada máx. (km/h)"].sum():
+            direita.bar_chart(serie[["rajada máx. (km/h)"]], color="#1C6DA8")
+
     # --- Etapa 2: eventos detectados --------------------------------------
     eventos = classificar_varias(previsoes, regras)
     _cabecalho_etapa(2, "Eventos detectados", "classificados pelos limiares de regras.yaml")
@@ -413,7 +458,35 @@ else:
     st.markdown(
         '<div class="msg" style="text-align:center; border-left:none; '
         'border-top:4px solid #2F6FED;">Configure os controles na barra lateral '
-        "e clique em <b>⚡ Executar demonstração</b>.</div>",
+        "e clique em <b>⚡ Executar demonstração</b>. O fluxo completo passa por "
+        "quatro etapas:</div>",
+        unsafe_allow_html=True,
+    )
+    _cartoes = [
+        ("1", "🌧️", "Previsão obtida",
+         "Consulta a Open-Meteo (ou injeta um cenário forçado) e monta a janela horária por cidade."),
+        ("2", "🔍", "Eventos detectados",
+         "Compara as medidas com os limiares de regras.yaml: chuva, raio, vento e granizo."),
+        ("3", "👥", "Segurados selecionados",
+         "Cruza evento × apólice × local para decidir exatamente quem deve ser avisado."),
+        ("4", "✉️", "Mensagens geradas",
+         "Escreve o aviso por canal, respeita os limites e registra tudo em JSONL auditável."),
+    ]
+    colunas = st.columns(4)
+    for coluna, (num, icone, titulo, desc) in zip(colunas, _cartoes):
+        with coluna:
+            st.markdown(
+                f'<div class="fluxo-card"><div class="fluxo-num">{num}</div>'
+                f'<span class="fluxo-icone">{icone}</span>'
+                f'<p class="fluxo-titulo">{titulo}</p>'
+                f'<p class="fluxo-desc">{desc}</p></div>',
+                unsafe_allow_html=True,
+            )
+    st.markdown(
+        '<div class="msg" style="text-align:center; border-left:none; '
+        'border:1px dashed #CBD5E1; margin-top:18px;">🛡️ <b>Ambiente seguro '
+        "para demonstração:</b> nada é enviado a nenhum segurado — cada mensagem "
+        "fica registrada na caixa de saída simulada.</div>",
         unsafe_allow_html=True,
     )
 
