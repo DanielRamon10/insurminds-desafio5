@@ -1,0 +1,12 @@
+# Tema da interface de demonstração — paleta InsurTech (azul-marinho profundo,
+# acento azul vivo, superfícies claras). O CSS extra do app complementa este
+# tema com o hero gradiente, badges e cartões.
+[theme]
+base = "light"
+primaryColor = "#2F6FED"
+backgroundColor = "#FFFFFF"
+secondaryBackgroundColor = "#F1F5FB"
+textColor = "#12263A"
+
+[browser]
+gatherUsageStats = false
