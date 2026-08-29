@@ -7,6 +7,7 @@ __pycache__/
 .workspace/
 .streamlit/secrets.toml
 .cache/
+data/caixa_de_saida/
 *.log
 .DS_Store
 Thumbs.db
