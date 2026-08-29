@@ -1,138 +1,150 @@
-"""Orquestrador (C.1). Encadeia: coleta (Frente A) -> decisão/regras
-(Frente B) -> redação (Frente C) -> guardrail -> fallback.
+"""Orquestrador (C.1). Encadeia as quatro frentes numa passagem só:
 
-IMPORTANTE — ponta que ainda depende da Frente B:
+    coleta (A) -> classificação e regras (B) -> redação (C) -> guardrail -> fallback
 
-O motor de regras ainda não tem uma classe própria em `schemas.py`
-(provavelmente vai ler `data/regras.yaml`). `DecisaoNotificar` abaixo é
-um placeholder local só para a Frente C não ficar bloqueada. Quando a
-Frente B definir a interface real do motor de regras (B.3), troque
-`_decidir_notificacoes()` pela chamada real; o resto do pipeline
-(redator/guardrail/fallback) não muda.
+Duas fronteiras importam aqui, e ambas apontam para a frente B como fonte de
+verdade:
 
-A coleta (A.1-A.3) e o classificador (B.2) já estão plugados:
-- `clients.open_meteo` e `clients.inmet` são os módulos reais da Frente A.
-- `classificador_placeholder.classificar()` é meu placeholder para B.2 —
-  troque pelo classificador real assim que a Frente B publicar, mantendo
-  a assinatura `Medidas -> (TipoEvento, Severidade) | None`.
+* **O que é um evento** vem de `domain.eventos.classificar()`, que aplica os
+  limiares de `data/regras.yaml` — definidos pelo corretor do grupo, não por
+  chute de quem programa.
+* **Quem deve ser avisado, e do quê** vem de `Regras.recomendacao()`. A mesma
+  chamada devolve a orientação preventiva que o especialista escreveu para
+  aquele par evento × apólice, e é ela que viaja no `regra_acionada` até o
+  prompt do redator. Sem isso a mensagem seria genérica: o valor da recomendação
+  é justamente ser específica da combinação.
 """
 
 from __future__ import annotations
 
 import logging
-from dataclasses import dataclass
 from typing import Iterable, NamedTuple
 
-from ..schemas import Cidade, EventoClimatico, Notificacao, Segurado, StatusEnvio
-from . import fallback, guardrails, redator
-from .classificador_placeholder import classificar
-from .llm import LLMIndisponivel
 from ..clients import inmet, open_meteo
+from ..domain.eventos import classificar
+from ..domain.regras import Regras, carregar_regras
+from ..schemas import Cidade, EventoClimatico, Notificacao, Segurado
+from . import fallback, guardrails, redator
+from .llm import LLMIndisponivel
 
 log = logging.getLogger(__name__)
 
 
 class DecisaoNotificar(NamedTuple):
-    """Placeholder até a Frente B expor a interface real do motor de
-    regras (B.3). Representa: este segurado deve ser notificado por
-    causa deste evento, por este motivo."""
+    """Este segurado deve ser avisado deste evento, por este motivo.
+
+    `regra_acionada` carrega a recomendação preventiva de `data/regras.yaml`,
+    que é o que dá conteúdo específico à mensagem.
+    """
 
     segurado: Segurado
     evento: EventoClimatico
     regra_acionada: str
 
 
-def _coletar_eventos(cidades: list[Cidade]) -> list[EventoClimatico]:
-    """Coleta real: Open-Meteo (A.1-A.3) + enriquecimento com alertas do
-    INMET (A.4). A classificação (que decide se a janela vira evento e
-    com que severidade) ainda é o placeholder de B.2 — ver docstring do
-    módulo."""
+def _coletar_eventos(cidades: list[Cidade], regras: Regras) -> list[EventoClimatico]:
+    """Previsão real de cada cidade, classificada pelos limiares do especialista.
+
+    Os avisos do INMET (A.4) entram como enriquecimento: anexam-se ao evento já
+    classificado, sem nunca criar nem remover um — a classificação é nossa, e a
+    granularidade do aviso oficial é grosseira demais para decidir por conta
+    própria (um único aviso chega a cobrir quase dois mil municípios).
+    """
     previsoes, falhas = open_meteo.buscar_varias(cidades)
     for cidade, motivo in falhas:
         log.warning("sem previsao para %s: %s", cidade, motivo)
 
     alertas = inmet.buscar_alertas_tolerante()
-    cidades_por_chave = {(c.nome, c.uf): c for c in cidades}
+    por_chave = {(c.nome, c.uf): c for c in cidades}
 
     eventos: list[EventoClimatico] = []
     for previsao in previsoes:
-        medidas = previsao.agregar()
-        classificacao = classificar(medidas)
-        if classificacao is None:
-            continue
-        tipo, severidade = classificacao
-
-        cidade_obj = cidades_por_chave.get((previsao.cidade, previsao.uf))
-        alertas_da_cidade = (
-            inmet.alertas_da_cidade(alertas, cidade_obj, previsao.inicio, previsao.fim)
-            if cidade_obj is not None
+        cidade = por_chave.get((previsao.cidade, previsao.uf))
+        oficiais = (
+            inmet.alertas_da_cidade(alertas, cidade, previsao.inicio, previsao.fim)
+            if cidade is not None
             else []
         )
-
-        eventos.append(
-            EventoClimatico(
-                cidade=previsao.cidade,
-                uf=previsao.uf,
-                tipo=tipo,
-                severidade=severidade,
-                inicio=previsao.inicio,
-                fim=previsao.fim,
-                medidas=medidas,
-                alertas_oficiais=alertas_da_cidade,
-            )
-        )
+        for evento in classificar(previsao, regras):
+            if oficiais:
+                evento = evento.model_copy(update={"alertas_oficiais": oficiais})
+            eventos.append(evento)
     return eventos
 
 
 def _decidir_notificacoes(
-    segurados: Iterable[Segurado], eventos: Iterable[EventoClimatico]
+    segurados: Iterable[Segurado],
+    eventos: Iterable[EventoClimatico],
+    regras: Regras,
 ) -> list[DecisaoNotificar]:
-    """TODO(Frente B): substituir pela chamada real ao motor de regras
-    (provavelmente em app/agents/domain/, lendo data/regras.yaml).
-    Placeholder: usa EventoClimatico.atinge() (já existe em schemas.py)
-    para não ficar bloqueado enquanto B.3 não chega."""
-    decisoes = []
+    """Cruza eventos com segurados, consultando as regras de negócio.
+
+    Um par evento × apólice sem recomendação em `regras.yaml` não notifica —
+    é assim que "raio × automotiva" fica de fora sem precisar de exceção no
+    código: o especialista simplesmente não escreveu recomendação para ele.
+    """
+    segurados = list(segurados)
+    decisoes: list[DecisaoNotificar] = []
+
     for evento in eventos:
         for segurado in segurados:
-            if segurado.cidade != evento.cidade or segurado.uf != evento.uf:
+            if (segurado.cidade, segurado.uf) != (evento.cidade, evento.uf):
                 continue
-            if evento.atinge(segurado.tipo_apolice):
-                decisoes.append(
-                    DecisaoNotificar(
-                        segurado=segurado,
-                        evento=evento,
-                        regra_acionada=f"[placeholder] {evento.tipo.value} x {segurado.tipo_apolice.value}",
-                    )
+            recomendacao = regras.recomendacao(evento.tipo, segurado.tipo_apolice)
+            if recomendacao is None:
+                continue
+            decisoes.append(
+                DecisaoNotificar(
+                    segurado=segurado,
+                    evento=evento,
+                    regra_acionada=(
+                        f"{evento.tipo.value} x {segurado.tipo_apolice.value}: {recomendacao}"
+                    ),
                 )
+            )
     return decisoes
 
 
 def processar_decisao(decisao: DecisaoNotificar) -> Notificacao:
-    """Roda C.2 -> C.3 -> C.4 para uma única decisão. Função exposta
-    separadamente para poder ser testada/chamada isoladamente."""
+    """Roda C.2 -> C.3 -> C.4 para uma única decisão.
+
+    O fallback cobre os dois modos de falha da redação por LLM: a API não
+    responder, e a mensagem responder mas não passar no guardrail.
+    """
     try:
         notificacao = redator.redigir(decisao.segurado, decisao.evento, decisao.regra_acionada)
-    except LLMIndisponivel:
+    except LLMIndisponivel as exc:
+        log.info("redacao por LLM indisponivel (%s): usando template", exc)
         return fallback.gerar_fallback(decisao.segurado, decisao.evento, decisao.regra_acionada)
 
     ok, motivo = guardrails.validar_notificacao(notificacao)
     if not ok:
-        notificacao = fallback.gerar_fallback(decisao.segurado, decisao.evento, decisao.regra_acionada)
+        log.warning("mensagem do LLM rejeitada pelo guardrail: %s", motivo)
+        notificacao = fallback.gerar_fallback(
+            decisao.segurado, decisao.evento, decisao.regra_acionada
+        )
         notificacao.regra_acionada += f" (LLM rejeitado pelo guardrail: {motivo})"
 
     return notificacao
 
 
-def rodar(segurados: list[Segurado], cidades: list[Cidade]) -> list[Notificacao]:
-    eventos = _coletar_eventos(cidades)
-    decisoes = _decidir_notificacoes(segurados, eventos)
+def rodar(
+    segurados: list[Segurado], cidades: list[Cidade], regras: Regras | None = None
+) -> list[Notificacao]:
+    """Pipeline completo, da API à mensagem pronta para envio."""
+    regras = regras or carregar_regras()
+    eventos = _coletar_eventos(cidades, regras)
+    decisoes = _decidir_notificacoes(segurados, eventos, regras)
     return [processar_decisao(d) for d in decisoes]
 
 
 def rodar_com_eventos_mockados(
-    segurados: list[Segurado], eventos: list[EventoClimatico]
+    segurados: list[Segurado],
+    eventos: list[EventoClimatico],
+    regras: Regras | None = None,
 ) -> list[Notificacao]:
-    """Pula a coleta real (A) — útil para testar C isoladamente ou na
-    demo, sem depender da API/cliente estarem prontos."""
-    decisoes = _decidir_notificacoes(segurados, eventos)
+    """Pula a coleta real — para testar C isoladamente e para a demonstração
+    de cenário forçado, que não pode depender do tempo do dia."""
+    regras = regras or carregar_regras()
+    decisoes = _decidir_notificacoes(segurados, eventos, regras)
     return [processar_decisao(d) for d in decisoes]
