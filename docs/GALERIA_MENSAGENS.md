@@ -5,7 +5,7 @@ climático forçado, classificado pelos limiares de `data/regras.yaml`,
 cruzado com a base de segurados e redigido pelos agentes. Nenhuma foi
 escrita à mão.
 
-Gerada em 30/08/2026 às 16:54 por `python -m scripts.gerar_galeria --sem-llm`.
+Gerada em 30/08/2026 às 18:52 por `python -m scripts.gerar_galeria`.
 
 ---
 
@@ -19,61 +19,65 @@ e não há recomendação preventiva honesta a fazer.
 
 **Disparado por:** chuva na hora mais forte 35 mm/h; chuva acumulada em 24 h 81 mm
 
-> ALERTA: chuva intensa em Curitiba-PR. chuva na hora mais forte 35 mm/h, chuva acumulada [...] Evite áreas sujeitas a alagamento, mantenha ralos [...]
+> Alerta de chuva intensa em Curitiba (35.0mm/h). Mantenha ralos desobstruídos e, se a água ameaçar entrar, proteja seus bens e desligue a energia local.
 
-`SMS` · 149/160 caracteres · redator por template
+`SMS` · 151/160 caracteres · agente redator (LLM)
 
 ### Chuva intensa · alerta · apólice automotiva
 
 **Disparado por:** chuva na hora mais forte 35 mm/h; chuva acumulada em 24 h 81 mm
 
-> ALERTA: chuva intensa em Curitiba-PR. chuva na hora mais forte 35 mm/h, chuva acumulada em 24 h 81 mm. Evite estacionar ou trafegar por áreas alagáveis; se possível, deixe o veículo em local alto e seguro e não atravesse ruas com [...]
+> Bruno, alerta em Curitiba: previstos 35.0 mm/h (total de 81.0 mm). Evite áreas alagáveis e não atravesse ruas com água. Deixe o veículo em local alto e seguro agora.
 
-`PUSH` · 235/240 caracteres · redator por template
+`PUSH` · 165/240 caracteres · agente redator (LLM)
 
 ### Raio · alerta · apólice residencial
 
 **Disparado por:** energia da tempestade (CAPE) 2200 J/kg; código de trovoada (WMO) 95
 
-> ALERTA: tempestade com raios em Curitiba-PR. energia convectiva de 2200 J/kg. Desconecte aparelhos eletrônicos sensíveis da tomada, evite usar equipamentos ligados à rede elétrica durante a tempestade e mantenha-se em local protegido.
+> Carla, alerta de raios em Curitiba! Para a segurança do seu lar e família, desconecte os aparelhos eletrônicos da tomada e evite usar a rede elétrica durante a tempestade. Mantenha-se em local protegido.
 
-`PUSH` · 234/240 caracteres · redator por template
+`PUSH` · 203/240 caracteres · agente redator (LLM)
 
 ### Vento forte · alerta · apólice residencial
 
 **Disparado por:** rajada máxima 92 km/h
 
-> ALERTA: vento forte em Curitiba-PR. rajadas de até 92 km/h. Recolha ou fixe objetos soltos em quintais e varandas, feche portas e janelas e afaste-se [...]
+> Diego, alerta em Curitiba: rajadas de 92.0 km/h. Para proteger sua família, recolha objetos soltos, feche portas e janelas e afaste-se de árvores.
 
-`SMS` · 155/160 caracteres · redator por template
+`SMS` · 146/160 caracteres · agente redator (LLM)
 
 ### Vento forte · alerta · apólice automotiva
 
 **Disparado por:** rajada máxima 92 km/h
 
-> ALERTA: vento forte em Curitiba-PR. rajadas de até 92 km/h. Estacione em local coberto e seguro; durante rajadas fortes, evite estacionar perto de árvores, placas, postes ou outras estruturas instáveis.
+> Elisa, alerta de vento forte em Curitiba com rajadas de 92.0 km/h. Estacione seu carro em local coberto e seguro. Durante as rajadas, evite estacionar perto de árvores, placas, postes ou estruturas instáveis.
 
-`PUSH` · 202/240 caracteres · redator por template
+`PUSH` · 208/240 caracteres · agente redator (LLM)
 
 ### Granizo · alerta · apólice residencial
 
 **Disparado por:** energia da tempestade (CAPE) 2800 J/kg; altura onde congela 2600 m
 
-> ALERTA: Granizo previsto para Curitiba/PR (próximas 24 horas).
+> Hugo, identificamos um alerta meteorológico com risco de granizo para a sua residência em Curitiba/PR. Os dados da região apontam CAPE de 2800.0 J/kg e nível de congelamento a 2600.0 metros, o que indica uma alta probabilidade de tempestade severa.
 
-Medidas observadas: energia convectiva de 2800 J/kg, altitude de congelamento em 2600 m.
+A sua segurança, a de sua família e a proteção do seu lar são a nossa maior prioridade. Para garantir que todos fiquem bem e seguros, pedimos que siga estas orientações preventivas o quanto antes:
 
-Orientação preventiva: Recolha objetos que possam ser danificados em áreas descobertas, evite permanecer sob claraboias, telhas translúcidas ou vidros amplos e mantenha-se afastado de janelas durante a queda de granizo.
+- Recolha objetos que possam ser danificados em áreas descobertas.
+- Evite permanecer sob claraboias, telhas translúcidas ou vidros amplos.
+- Mantenha-se afastado de janelas durante a queda de granizo.
 
-`EMAIL` · 373/2000 caracteres · redator por template
+Por favor, permaneça em um local coberto e protegido. Nossos canais continuam à disposição para oferecer o suporte necessário para o cuidado com a sua casa.
+
+`EMAIL` · 807/2000 caracteres · agente redator (LLM)
 
 ### Granizo · alerta · apólice automotiva
 
 **Disparado por:** energia da tempestade (CAPE) 2800 J/kg; altura onde congela 2600 m
 
-> ALERTA: granizo em Curitiba-PR. energia convectiva de 2800 J/kg, altitude de congelamento em 2600 m. Recolha o veículo para local coberto nas próximas horas e evite dirigir durante a tempestade de granizo.
+> Alerta de granizo em Curitiba, Iara! Recolha seu veículo para um local coberto nas próximas horas e evite dirigir durante a tempestade. Mantenha seu carro protegido e fique em segurança.
 
-`PUSH` · 205/240 caracteres · redator por template
+`PUSH` · 186/240 caracteres · agente redator (LLM)
 
 ---
 
@@ -95,9 +99,9 @@ segurado tem a proteger.
 
 **Disparado por:** chuva na hora mais forte 35 mm/h; chuva acumulada em 24 h 81 mm
 
-> ALERTA: chuva intensa em Curitiba-PR. chuva na hora mais forte 35 mm/h, chuva acumulada em 24 h 81 mm. Evite estacionar ou trafegar por áreas alagáveis; se possível, deixe o veículo em local alto e seguro e não atravesse ruas com [...]
+> Bruno, alerta de chuva intensa em Curitiba (até 81.0mm). Evite trafegar por áreas alagáveis e não atravesse ruas com água acumulada. Se possível, estacione seu veículo em um local alto e seguro imediatamente.
 
-`PUSH` · 235/240 caracteres · redator por template
+`PUSH` · 208/240 caracteres · agente redator (LLM)
 
 ---
 
@@ -110,29 +114,34 @@ e-mail acomoda a orientação inteira, separada em blocos.
 
 **Disparado por:** energia da tempestade (CAPE) 2800 J/kg; altura onde congela 2600 m
 
-> ALERTA: granizo em Curitiba-PR. energia convectiva de 2800 J/kg, altitude de [...] Recolha o veículo para local coberto nas próximas horas e evite [...]
+> Iara, alerta de granizo em Curitiba. Recolha seu veículo para local coberto nas próximas horas e evite dirigir durante a tempestade.
 
-`SMS` · 152/160 caracteres · redator por template
+`SMS` · 132/160 caracteres · agente redator (LLM)
 
 ### Canal PUSH (limite 240)
 
 **Disparado por:** energia da tempestade (CAPE) 2800 J/kg; altura onde congela 2600 m
 
-> ALERTA: granizo em Curitiba-PR. energia convectiva de 2800 J/kg, altitude de congelamento em 2600 m. Recolha o veículo para local coberto nas próximas horas e evite dirigir durante a tempestade de granizo.
+> Iara, alerta de granizo para Curitiba/PR! Recolha o veículo para local coberto nas próximas horas e evite dirigir durante a tempestade de granizo.
 
-`PUSH` · 205/240 caracteres · redator por template
+`PUSH` · 146/240 caracteres · agente redator (LLM)
 
 ### Canal EMAIL (limite 2000)
 
 **Disparado por:** energia da tempestade (CAPE) 2800 J/kg; altura onde congela 2600 m
 
-> ALERTA: Granizo previsto para Curitiba/PR (próximas 24 horas).
+> Atenção, Iara. Existe um alerta de tempestade de granizo para a região de Curitiba/PR nas próximas horas. Os dados de monitoramento indicam condições severas na atmosfera, com CAPE em 2800.0 J/kg e nível de congelamento em 2600.0 metros.
 
-Medidas observadas: energia convectiva de 2800 J/kg, altitude de congelamento em 2600 m.
+Para proteger o seu veículo e garantir sua segurança, tome as seguintes providências imediatas:
 
-Orientação preventiva: Recolha o veículo para local coberto nas próximas horas e evite dirigir durante a tempestade de granizo.
+- Recolha o veículo para um local coberto (garagem fechada, estacionamento subterrâneo ou coberto) nas próximas horas.
+- Evite dirigir durante a tempestade de granizo.
+- Se a tempestade começar enquanto você estiver no trânsito, procure o abrigo coberto mais próximo e seguro para estacionar. Não pare embaixo de árvores, estruturas frágeis ou fiação elétrica.
+- Mantenha-se em abrigo seguro até a tempestade passar completamente.
 
-`EMAIL` · 281/2000 caracteres · redator por template
+Adote essas medidas preventivas o quanto antes.
+
+`EMAIL` · 815/2000 caracteres · agente redator (LLM)
 
 ---
 
@@ -150,17 +159,17 @@ dois blocos abaixo fica bem maior.
 
 **Disparado por:** rajada máxima 65 km/h
 
-> AVISO: vento forte em Curitiba-PR. rajadas de até 65 km/h. Estacione em local coberto e seguro; durante rajadas fortes, evite estacionar perto de árvores, placas, postes ou outras estruturas instáveis.
+> Elisa, há previsão de vento forte com rajadas de 65 km/h em Curitiba. Estacione em local coberto e seguro. Evite parar perto de árvores, postes, placas ou estruturas instáveis para proteger seu veículo.
 
-`PUSH` · 201/240 caracteres · redator por template
+`PUSH` · 202/240 caracteres · agente redator (LLM)
 
 ### Vento forte · severidade alerta
 
 **Disparado por:** rajada máxima 92 km/h
 
-> ALERTA: vento forte em Curitiba-PR. rajadas de até 92 km/h. Estacione em local coberto e seguro; durante rajadas fortes, evite estacionar perto de árvores, placas, postes ou outras estruturas instáveis.
+> Elisa, alerta de vento forte com rajadas de 92 km/h em Curitiba. Estacione seu veículo em local coberto e seguro. Durante as rajadas, evite parar perto de árvores, postes, placas ou outras estruturas instáveis.
 
-`PUSH` · 202/240 caracteres · redator por template
+`PUSH` · 210/240 caracteres · agente redator (LLM)
 
 ---
 
@@ -170,9 +179,3 @@ dois blocos abaixo fica bem maior.
 python -m scripts.gerar_galeria            # com LLM, se houver chave no .env
 python -m scripts.gerar_galeria --sem-llm  # só o redator por template
 ```
-
-> **Nota.** Esta edição saiu inteira pelo redator por template — o caminho
-> determinístico da tarefa C.4, que assume quando não há chave de LLM
-> configurada, quando a cota do dia acaba ou quando o guardrail reprova a
-> mensagem do modelo. Rodando com uma chave no `.env`, o mesmo comando
-> regenera esta galeria com as mensagens do agente redator.

@@ -26,6 +26,12 @@ TERMOS_PROIBIDOS = [
 
 _NUMERO_RE = re.compile(r"\d+(?:[.,]\d+)?")
 
+#: Números seguidos de unidade de tempo ("24 horas", "48h", "2 dias") não são
+#: dados climáticos citados pelo LLM — são referência de prazo, sempre
+#: aceitável na mensagem. Sem essa exceção, "nas próximas 24 horas" era
+#: rejeitado por engano (24 não é nenhuma medida do evento).
+_UNIDADE_TEMPO_RE = re.compile(r"^\s*(?:h|hs|horas?|dias?)\b", re.IGNORECASE)
+
 
 def _numeros_permitidos(evento: EventoClimatico) -> set[str]:
     permitidos: set[str] = set()
@@ -40,12 +46,17 @@ def _numeros_permitidos(evento: EventoClimatico) -> set[str]:
 
 def _checar_numeros_inventados(mensagem: str, evento: EventoClimatico) -> str | None:
     permitidos = _numeros_permitidos(evento)
-    for match in _NUMERO_RE.findall(mensagem):
-        candidato = match.replace(",", ".")
+    for match in _NUMERO_RE.finditer(mensagem):
+        numero = match.group()
+        resto = mensagem[match.end():]
+        if _UNIDADE_TEMPO_RE.match(resto):
+            continue  # referência de prazo ("24 horas", "48h"), não um dado inventado
+
+        candidato = numero.replace(",", ".")
         candidato_int = candidato.split(".")[0]
         if candidato in permitidos or candidato_int in permitidos:
             continue
-        return f"numero '{match}' nao corresponde a nenhuma medida do evento"
+        return f"numero '{numero}' nao corresponde a nenhuma medida do evento"
     return None
 
 

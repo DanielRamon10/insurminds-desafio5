@@ -55,6 +55,28 @@ class TimeoutRede(LLMIndisponivel):
     cada modelo da lista."""
 
 
+def _extrair_texto(conteudo) -> str:
+    """`resposta.content` normalmente é string, mas versões recentes do
+    LangChain/Gemini podem devolver uma lista de partes (ex: quando o
+    modelo usa "thinking" ou resposta multimodal). Sem isso, `.strip()`
+    numa lista quebra com AttributeError, tratado como falha genérica —
+    o que faz a galeria inteira cair no template mesmo com a chave
+    funcionando."""
+    if isinstance(conteudo, str):
+        return conteudo.strip()
+    if isinstance(conteudo, list):
+        partes = []
+        for item in conteudo:
+            if isinstance(item, str):
+                partes.append(item)
+            elif isinstance(item, dict):
+                texto = item.get("text") or item.get("content")
+                if texto:
+                    partes.append(str(texto))
+        return "".join(partes).strip()
+    return str(conteudo or "").strip()
+
+
 def _montar_chat_model(provedor: str, modelo: str, api_key: str):
     if provedor == "google":
         from langchain_google_genai import ChatGoogleGenerativeAI
@@ -122,7 +144,7 @@ def gerar_texto(prompt: str, cfg: ConfigLLM | None = None) -> str:
         try:
             chat = _montar_chat_model(cfg.provedor, modelo, api_key)
             resposta = _invocar_com_timeout(chat, prompt, TIMEOUT_SEGUNDOS)
-            texto = (resposta.content or "").strip()
+            texto = _extrair_texto(resposta.content)
             if texto:
                 return texto
         except TimeoutRede:
