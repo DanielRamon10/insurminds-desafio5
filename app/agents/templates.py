@@ -47,7 +47,7 @@ ROTULO_EVENTO: dict[str, str] = {
 ROTULO_MEDIDA: dict[str, tuple[str, str]] = {
     "precipitacao_mm_h": ("chuva na hora mais forte", "mm/h"),
     "precipitacao_mm_janela": ("chuva acumulada em 24 h", "mm"),
-    "rajada_km_h": ("rajadas de ate", "km/h"),
+    "rajada_km_h": ("rajadas de até", "km/h"),
     "cape_j_kg": ("energia convectiva de", "J/kg"),
     "nivel_congelamento_m": ("altitude de congelamento em", "m"),
 }
@@ -90,7 +90,7 @@ def compor_mensagem(
     if canal is Canal.EMAIL:
         linhas = [
             f"{severidade}: {rotulo.capitalize()} previsto para {evento.local} "
-            "(proximas 24 horas).",
+            "(próximas 24 horas).",
         ]
         if medidas:
             linhas.append(f"Medidas observadas: {medidas}.")
