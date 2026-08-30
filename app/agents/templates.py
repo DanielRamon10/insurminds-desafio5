@@ -1,9 +1,13 @@
-"""Redator por template — apoio da Frente D até que C.2/C.4 fiquem prontas.
+"""Redator por template — o fallback sem LLM da tarefa C.4.
 
-Isto é um *fallback determinístico*, na linha do que a tarefa C.4 pede (o modelo
-de mensagem por template para quando o LLM falhar ou a cota estourar). Quando a
-Nicole entregar o agente redator com LLM, este módulo continua valendo como
-caminho alternativo e como material de comparação para a galeria E.4.
+Assume a redação quando o agente redator (C.2) não pode escrever: a API do LLM
+fora do ar, a cota do dia estourada, a mensagem reprovada pelo guardrail (C.3),
+ou o operador tendo desligado o LLM para a demonstração não depender de rede.
+O orquestrador escolhe entre os dois caminhos; nada chama este módulo direto.
+
+Como a mensagem daqui nunca falha, ela é também o piso de qualidade do sistema
+e o termo de comparação da galeria E.4: toda mensagem do LLM deveria ficar ao
+menos tão específica quanto a que sairia por template.
 
 Guardrails respeitados aqui (espelham os critérios de C.3):
 

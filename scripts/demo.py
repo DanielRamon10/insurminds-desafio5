@@ -11,10 +11,12 @@ Uso:
     python scripts/demo.py --cenario granizo   # cenário forçado sob encomenda
     python scripts/demo.py --cenario raio_atencao --cidade "Porto Alegre"
     python scripts/demo.py --listar-cenarios
+    python scripts/demo.py --cenario granizo --sem-llm   # só template, sem cota
 
-A redação usa os templates de fallback (`app/agents/templates.py`) enquanto a
-tarefa C.2 da frente C não está integrada — as mensagens citam apenas medidas
-reais do evento e respeitam o limite do canal.
+A redação passa pelo orquestrador da frente C: o agente redator escreve com o
+LLM, o guardrail confere, e o template determinístico assume se qualquer um dos
+dois falhar. `--sem-llm` vai direto ao template, para quando não há chave
+configurada ou a cota do dia acabou.
 """
 
 from __future__ import annotations
@@ -32,7 +34,7 @@ RAIZ = Path(__file__).resolve().parent.parent
 if str(RAIZ) not in sys.path:
     sys.path.insert(0, str(RAIZ))
 
-from app.agents.templates import construir_notificacao
+from app.agents.orchestrator import gerar_notificacao
 from app.clients.open_meteo import ErroColeta, buscar_varias
 from app.config import carregar_cidades
 from app.domain.cenarios import CENARIOS_FORCADOS, listar_cenarios, previsao_cenario
@@ -46,7 +48,7 @@ def _etapa(numero: int, titulo: str) -> None:
     print(f"\n{'=' * 62}\nETAPA {numero} - {titulo}\n{'=' * 62}")
 
 
-def rodar(cenario: str | None, filtro_cidade: str | None) -> int:
+def rodar(cenario: str | None, filtro_cidade: str | None, usar_llm: bool = True) -> int:
     regras = carregar_regras()
     todas = carregar_cidades()
     cidades = [
@@ -138,7 +140,7 @@ def rodar(cenario: str | None, filtro_cidade: str | None) -> int:
     contagem = {"simulado": 0, "descartado": 0}
 
     for s, evento in selecoes:
-        notificacao = construir_notificacao(s, evento, regras)
+        notificacao = gerar_notificacao(s, evento, regras, usar_llm=usar_llm)
         if notificacao is None:
             continue
         final = caixa.registrar(notificacao)
@@ -191,6 +193,11 @@ def main() -> None:
         help="filtra as cidades monitoradas por parte do nome",
     )
     parser.add_argument(
+        "--sem-llm",
+        action="store_true",
+        help="redige so por template, sem chamar o LLM (util sem chave ou com cota estourada)",
+    )
+    parser.add_argument(
         "--listar-cenarios",
         action="store_true",
         help="mostra os cenarios disponiveis e sai",
@@ -204,7 +211,7 @@ def main() -> None:
             print(f"  {nome:22s} {tipo.value}/{severidade.value}")
         return
 
-    sys.exit(rodar(argumentos.cenario, argumentos.cidade))
+    sys.exit(rodar(argumentos.cenario, argumentos.cidade, usar_llm=not argumentos.sem_llm))
 
 
 if __name__ == "__main__":

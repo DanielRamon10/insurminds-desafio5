@@ -193,6 +193,66 @@ def test_llm_indisponivel_cai_no_template(monkeypatch):
     assert notificacoes[0].mensagem
 
 
+def test_llm_desligado_nao_chama_o_redator(monkeypatch):
+    """`usar_llm=False` é o modo da apresentação sem cota: nem tenta a rede."""
+    def nao_deveria(prompt, cfg=None):
+        raise AssertionError("o redator foi chamado com o LLM desligado")
+
+    monkeypatch.setattr(orchestrator.redator, "gerar_texto", nao_deveria)
+
+    eventos = classificar(previsao(chuva_h=45 / 24), REGRAS)
+    notificacoes = orchestrator.rodar_com_eventos_mockados(
+        [segurado()], eventos, REGRAS, usar_llm=False
+    )
+    assert len(notificacoes) == 1
+    assert notificacoes[0].gerada_por_llm is False
+
+
+def test_template_fala_de_carro_para_apolice_automotiva():
+    """O template escolhe a orientação pelo par evento × apólice. Antes da
+    consolidação o dono do carro ouvia "verifique calhas e ralos"."""
+    eventos = classificar(previsao(chuva_h=45 / 24), REGRAS)
+    notificacao = orchestrator.gerar_notificacao(
+        segurado(TipoApolice.AUTOMOTIVA), eventos[0], REGRAS, usar_llm=False
+    )
+    esperada = REGRAS.recomendacao(TipoEvento.CHUVA_INTENSA, TipoApolice.AUTOMOTIVA)
+    assert esperada
+    # a recomendação pode vir cortada no limite do canal; o começo tem de bater
+    assert esperada[:40] in notificacao.mensagem
+
+
+def test_gerar_notificacao_respeita_a_matriz_de_negocio():
+    """O ponto de entrada da frente D obedece às mesmas regras do pipeline."""
+    raios = [e for e in classificar(previsao(wmo=95, cape=1000.0), REGRAS)
+             if e.tipo is TipoEvento.RAIO]
+    assert orchestrator.gerar_notificacao(
+        segurado(TipoApolice.AUTOMOTIVA), raios[0], REGRAS, usar_llm=False
+    ) is None
+    assert orchestrator.gerar_notificacao(
+        segurado(TipoApolice.RESIDENCIAL), raios[0], REGRAS, usar_llm=False
+    ) is not None
+
+
+def test_mensagem_cabe_no_canal_em_todos_os_cenarios():
+    """A caixa de saída descarta o que estoura o limite; nenhuma combinação de
+    evento × apólice × canal pode chegar lá estourada."""
+    from app.schemas import LIMITE_CARACTERES
+
+    for cenario in [previsao(chuva_h=60 / 24, rajada=95.0),
+                    previsao(wmo=95, cape=2800.0, congelamento=2600.0)]:
+        for evento in classificar(cenario, REGRAS):
+            for apolice in TipoApolice:
+                for canal in Canal:
+                    s = segurado(apolice).model_copy(update={"canal": canal})
+                    n = orchestrator.gerar_notificacao(s, evento, REGRAS, usar_llm=False)
+                    if n is None:
+                        continue
+                    assert len(n.mensagem) <= LIMITE_CARACTERES[canal], (
+                        f"{evento.tipo.value}/{apolice.value}/{canal.value}: "
+                        f"{len(n.mensagem)} caracteres"
+                    )
+
+
 def test_uma_falha_de_llm_nao_derruba_as_outras_notificacoes(monkeypatch):
     """O fallback é por notificação: uma mensagem que falha não pode custar as
     demais na hora da apresentação."""
