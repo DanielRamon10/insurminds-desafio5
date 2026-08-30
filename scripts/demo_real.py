@@ -11,7 +11,7 @@ redator; sem chave, cai no fallback igual.
 """
 
 from app.config import carregar_cidades
-from app.agents.carregar_segurados import carregar_segurados
+from app.domain.segurados import carregar_segurados
 from app.agents.orchestrator import rodar
 
 

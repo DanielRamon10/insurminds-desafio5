@@ -21,9 +21,9 @@ from __future__ import annotations
 import pandas as pd
 import streamlit as st
 
-from app.agents.templates import construir_notificacao
+from app.agents.orchestrator import gerar_notificacao
 from app.clients.open_meteo import buscar_varias
-from app.config import carregar_cidades
+from app.config import ConfigLLM, carregar_cidades, obter_api_key
 from app.domain.cenarios import CENARIOS_FORCADOS, listar_cenarios, previsao_cenario
 from app.domain.eventos import classificar_varias
 from app.domain.regras import carregar_regras
@@ -283,6 +283,16 @@ with st.sidebar:
         options=[str(c) for c in cidades],
         default=[str(c) for c in cidades[:3]],
     )
+    _tem_chave = bool(obter_api_key(ConfigLLM().provedor))
+    usar_llm = st.toggle(
+        "Redigir com LLM",
+        value=_tem_chave,
+        help="Desligado, as mensagens saem pelo redator por template — o mesmo "
+             "caminho usado quando a cota do LLM estoura. Ligado sem chave "
+             "configurada, cai no template do mesmo jeito.",
+    )
+    if usar_llm and not _tem_chave:
+        st.caption("⚠️ Sem chave no .env — vai cair no template.")
     executar = st.button("⚡ Executar demonstração", type="primary", use_container_width=True)
     st.divider()
     st.caption(f"**Regras:** regras.yaml v{regras.versao}")
@@ -417,7 +427,7 @@ if executar:
     lote = caixa.iniciar_lote()
     finais = []
     for s, ev in selecoes:
-        notificacao = construir_notificacao(s, ev, regras)
+        notificacao = gerar_notificacao(s, ev, regras, usar_llm=usar_llm)
         if notificacao is not None:
             finais.append(caixa.registrar(notificacao))
 

@@ -2,6 +2,12 @@
 
     coleta (A) -> classificação e regras (B) -> redação (C) -> guardrail -> fallback
 
+Este módulo é o **único caminho** para transformar um evento em mensagem. A
+interface e o CLI da frente D chamam `gerar_notificacao()`; nada monta uma
+`Notificacao` por fora. Sem essa regra o projeto ganhou, por um tempo, dois
+pipelines paralelos — um com LLM e outro só com template — e a tela da
+demonstração exibia "0 via LLM" porque não passava pelo redator.
+
 Duas fronteiras importam aqui, e ambas apontam para a frente B como fonte de
 verdade:
 
@@ -11,8 +17,7 @@ verdade:
 * **Quem deve ser avisado, e do quê** vem de `Regras.recomendacao()`. A mesma
   chamada devolve a orientação preventiva que o especialista escreveu para
   aquele par evento × apólice, e é ela que viaja no `regra_acionada` até o
-  prompt do redator. Sem isso a mensagem seria genérica: o valor da recomendação
-  é justamente ser específica da combinação.
+  prompt do redator e até o template.
 """
 
 from __future__ import annotations
@@ -24,7 +29,7 @@ from ..clients import inmet, open_meteo
 from ..domain.eventos import classificar
 from ..domain.regras import Regras, carregar_regras
 from ..schemas import Cidade, EventoClimatico, Notificacao, Segurado
-from . import fallback, guardrails, redator
+from . import guardrails, redator, templates
 from .llm import LLMIndisponivel
 
 log = logging.getLogger(__name__)
@@ -33,8 +38,9 @@ log = logging.getLogger(__name__)
 class DecisaoNotificar(NamedTuple):
     """Este segurado deve ser avisado deste evento, por este motivo.
 
-    `regra_acionada` carrega a recomendação preventiva de `data/regras.yaml`,
-    que é o que dá conteúdo específico à mensagem.
+    `regra_acionada` carrega a versão das regras e a recomendação preventiva de
+    `data/regras.yaml` — é o que dá conteúdo específico à mensagem e o que torna
+    a decisão auditável depois, no registro da caixa de saída.
     """
 
     segurado: Segurado
@@ -98,53 +104,101 @@ def _decidir_notificacoes(
                     segurado=segurado,
                     evento=evento,
                     regra_acionada=(
-                        f"{evento.tipo.value} x {segurado.tipo_apolice.value}: {recomendacao}"
+                        f"regras.yaml v{regras.versao} | {evento.tipo.value} x "
+                        f"{segurado.tipo_apolice.value}: {recomendacao}"
                     ),
                 )
             )
     return decisoes
 
 
-def processar_decisao(decisao: DecisaoNotificar) -> Notificacao:
+def processar_decisao(
+    decisao: DecisaoNotificar, regras: Regras, usar_llm: bool = True
+) -> Notificacao:
     """Roda C.2 -> C.3 -> C.4 para uma única decisão.
 
-    O fallback cobre os dois modos de falha da redação por LLM: a API não
-    responder, e a mensagem responder mas não passar no guardrail.
+    O template cobre os três modos de falha da redação por LLM: a API não
+    responder, a mensagem responder mas não passar no guardrail, e o operador
+    ter desligado o LLM para a demonstração não depender de cota.
+
+    A mensagem por template nunca falha, então esta função sempre devolve uma
+    `Notificacao` — a falha de uma não pode custar as outras na apresentação.
     """
-    try:
-        notificacao = redator.redigir(decisao.segurado, decisao.evento, decisao.regra_acionada)
-    except LLMIndisponivel as exc:
-        log.info("redacao por LLM indisponivel (%s): usando template", exc)
-        return fallback.gerar_fallback(decisao.segurado, decisao.evento, decisao.regra_acionada)
+    if usar_llm:
+        try:
+            notificacao = redator.redigir(
+                decisao.segurado, decisao.evento, decisao.regra_acionada
+            )
+            aprovada, motivo = guardrails.validar_notificacao(notificacao)
+            if aprovada:
+                return notificacao
+            log.warning("mensagem do LLM rejeitada pelo guardrail: %s", motivo)
+            sufixo = f" (LLM rejeitado pelo guardrail: {motivo})"
+        except LLMIndisponivel as exc:
+            log.info("redacao por LLM indisponivel (%s): usando template", exc)
+            sufixo = f" (LLM indisponivel: {exc})"
+    else:
+        sufixo = ""
 
-    ok, motivo = guardrails.validar_notificacao(notificacao)
-    if not ok:
-        log.warning("mensagem do LLM rejeitada pelo guardrail: %s", motivo)
-        notificacao = fallback.gerar_fallback(
-            decisao.segurado, decisao.evento, decisao.regra_acionada
+    return _por_template(decisao, regras, sufixo)
+
+
+def _por_template(decisao: DecisaoNotificar, regras: Regras, sufixo: str) -> Notificacao:
+    """Redação determinística (C.4), com o mesmo `regra_acionada` do outro
+    caminho — a origem da mensagem se lê em `gerada_por_llm`, não no rótulo da
+    regra, para os dois caminhos serem comparáveis no relatório."""
+    notificacao = templates.construir_notificacao(
+        decisao.segurado, decisao.evento, regras
+    )
+    if notificacao is None:  # rede de segurança: a decisão já garantiu o par
+        raise RuntimeError(
+            f"template recusou um par que as regras aprovaram: "
+            f"{decisao.evento.tipo.value} x {decisao.segurado.tipo_apolice.value}"
         )
-        notificacao.regra_acionada += f" (LLM rejeitado pelo guardrail: {motivo})"
+    return notificacao.model_copy(
+        update={"regra_acionada": decisao.regra_acionada + sufixo}
+    )
 
-    return notificacao
+
+def gerar_notificacao(
+    segurado: Segurado,
+    evento: EventoClimatico,
+    regras: Regras,
+    usar_llm: bool = True,
+) -> Notificacao | None:
+    """Mensagem deste segurado para este evento, ou `None` se as regras não
+    mandam notificar esse par.
+
+    É o ponto de entrada da frente D: interface e CLI passam por aqui, e por
+    isso ganham o redator com LLM e o fallback pelo mesmo caminho.
+    """
+    decisoes = _decidir_notificacoes([segurado], [evento], regras)
+    if not decisoes:
+        return None
+    return processar_decisao(decisoes[0], regras, usar_llm)
 
 
 def rodar(
-    segurados: list[Segurado], cidades: list[Cidade], regras: Regras | None = None
+    segurados: list[Segurado],
+    cidades: list[Cidade],
+    regras: Regras | None = None,
+    usar_llm: bool = True,
 ) -> list[Notificacao]:
     """Pipeline completo, da API à mensagem pronta para envio."""
     regras = regras or carregar_regras()
     eventos = _coletar_eventos(cidades, regras)
     decisoes = _decidir_notificacoes(segurados, eventos, regras)
-    return [processar_decisao(d) for d in decisoes]
+    return [processar_decisao(d, regras, usar_llm) for d in decisoes]
 
 
 def rodar_com_eventos_mockados(
     segurados: list[Segurado],
     eventos: list[EventoClimatico],
     regras: Regras | None = None,
+    usar_llm: bool = True,
 ) -> list[Notificacao]:
     """Pula a coleta real — para testar C isoladamente e para a demonstração
     de cenário forçado, que não pode depender do tempo do dia."""
     regras = regras or carregar_regras()
     decisoes = _decidir_notificacoes(segurados, eventos, regras)
-    return [processar_decisao(d) for d in decisoes]
+    return [processar_decisao(d, regras, usar_llm) for d in decisoes]
