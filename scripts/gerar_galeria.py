@@ -226,11 +226,18 @@ def gerar(usar_llm: bool) -> str:
     return "\n".join(linhas)
 
 
+MARCA_LLM = "agente redator (LLM)"
+
+
 def main() -> None:
     parser = argparse.ArgumentParser(description="Gera docs/GALERIA_MENSAGENS.md (E.4)")
     parser.add_argument(
         "--sem-llm", action="store_true",
         help="redige so por template, sem chamar o LLM",
+    )
+    parser.add_argument(
+        "--forcar", action="store_true",
+        help="sobrescreve uma galeria com mensagens de LLM por uma so de template",
     )
     argumentos = parser.parse_args()
 
@@ -239,7 +246,26 @@ def main() -> None:
         print("(sem chave no .env — a galeria sai pelo redator por template)")
 
     destino = Path(__file__).resolve().parent.parent / "docs" / "GALERIA_MENSAGENS.md"
-    destino.write_text(gerar(usar_llm), encoding="utf-8")
+    conteudo = gerar(usar_llm)
+
+    # A galeria com mensagens do LLM é a que vale para a entrega, e é fácil
+    # destruí-la sem perceber: basta rodar este script sem chave configurada.
+    if (
+        not argumentos.forcar
+        and MARCA_LLM not in conteudo
+        and destino.is_file()
+        and MARCA_LLM in destino.read_text(encoding="utf-8")
+    ):
+        print(
+            f"ABORTADO: {destino.name} tem mensagens geradas por LLM, e esta execucao\n"
+            f"produziria uma galeria so de template — pior para a entrega.\n\n"
+            f"  * configure a chave no .env e rode de novo, ou\n"
+            f"  * use --forcar se a substituicao for intencional.",
+            file=sys.stderr,
+        )
+        raise SystemExit(1)
+
+    destino.write_text(conteudo, encoding="utf-8")
     print(f"galeria escrita em {destino}")
 
 
