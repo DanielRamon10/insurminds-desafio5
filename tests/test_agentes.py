@@ -118,3 +118,59 @@ def test_llm_troca_de_modelo_quando_cota_estoura(monkeypatch):
     assert texto == "mensagem gerada pelo segundo modelo"
     assert len(modelos_tentados) == 2
     assert modelos_tentados[0] != modelos_tentados[1]  # tentou modelos diferentes
+
+# ---------------------------------------------------------------------------
+# llm.py — formato da resposta do modelo
+#
+# Regressão: o Gemini devolve `content` como lista de blocos quando o modelo usa
+# "thinking". Um `.strip()` direto nessa lista levanta AttributeError, que o
+# `except Exception` do laço de modelos tratava como "este modelo falhou" — então
+# todos os modelos "falhavam" em sequência e o pipeline caía no template com a
+# chave funcionando perfeitamente. O bug se disfarçava de fallback correto.
+# ---------------------------------------------------------------------------
+
+
+@pytest.mark.parametrize(
+    "conteudo, esperado",
+    [
+        ("Chuva a caminho.", "Chuva a caminho."),
+        (["Chuva ", "a caminho."], "Chuva a caminho."),
+        ([{"type": "text", "text": "Chuva a caminho."}], "Chuva a caminho."),
+        ([{"content": "Chuva a caminho."}], "Chuva a caminho."),
+        (
+            [
+                {"type": "thinking", "thinking": "o segurado tem apolice residencial"},
+                {"type": "text", "text": "Chuva a caminho."},
+            ],
+            "Chuva a caminho.",
+        ),
+        ("  Chuva a caminho.  ", "Chuva a caminho."),
+        (None, ""),
+        ([], ""),
+    ],
+)
+def test_extrai_texto_de_todos_os_formatos_de_resposta(conteudo, esperado):
+    assert llm._extrair_texto(conteudo) == esperado
+
+
+def test_resposta_em_blocos_nao_derruba_a_geracao(monkeypatch):
+    """O caminho completo: resposta em lista chega ao `gerar_texto` e sai texto,
+    em vez de virar falha de modelo."""
+    monkeypatch.setattr(llm, "_rede_marcada_indisponivel", False)
+    monkeypatch.setattr(llm, "obter_api_key", lambda provedor: "chave-fake")
+
+    class ChatFake:
+        def invoke(self, prompt: str):
+            class Resposta:
+                content = [
+                    {"type": "thinking", "thinking": "pensando"},
+                    {"type": "text", "text": "Chuva intensa prevista para hoje."},
+                ]
+
+            return Resposta()
+
+    monkeypatch.setattr(
+        llm, "_montar_chat_model", lambda provedor, modelo, api_key: ChatFake()
+    )
+
+    assert llm.gerar_texto("prompt") == "Chuva intensa prevista para hoje."

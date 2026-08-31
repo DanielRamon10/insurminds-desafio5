@@ -80,45 +80,93 @@ credencial aparece no código-fonte.
 
 ## Execução
 
+### Interface de demonstração
+
 ```bash
-streamlit run streamlit_app.py     # interface de demonstração
-python scripts/demo.py             # fluxo completo por linha de comando
-python -m pytest tests/ -v         # testes dos contratos de dados
+streamlit run streamlit_app.py
 ```
 
-> Em construção. Consulte o roteiro do projeto em [`docs/`](docs/) para o estado
-> atual de cada frente de trabalho.
+A barra lateral escolhe entre a previsão real e um cenário climático forçado, e
+permite ligar ou desligar a redação por LLM.
+
+### Linha de comando
+
+```bash
+python -m scripts.demo                        # previsão real das cidades monitoradas
+python -m scripts.demo --cenario granizo      # cenário forçado, sem depender do tempo
+python -m scripts.demo --listar-cenarios      # os oito cenários disponíveis
+python -m scripts.demo --cenario raio --sem-llm   # só o redator por template
+```
+
+Num dia calmo a previsão real não produz evento nenhum, e a saída diz isso —
+silêncio é resposta correta. Os cenários forçados existem justamente para a
+demonstração não depender do tempo.
+
+### Galeria de mensagens
+
+```bash
+python -m scripts.gerar_galeria               # regenera docs/GALERIA_MENSAGENS.md
+```
+
+Executa o pipeline inteiro e escreve um exemplo de mensagem por cenário, cada um
+com as medidas que o dispararam e a contagem de caracteres do canal.
+
+A galeria versionada foi gerada **com o LLM**. Rodar o comando sem chave
+configurada produziria uma versão só de template, pior para a entrega — o script
+detecta isso e aborta, em vez de sobrescrever em silêncio.
+
+### Testes
+
+```bash
+python -m pytest -q
+```
+
+**119 testes**, nenhum deles tocando a rede: as respostas das APIs e do modelo de
+linguagem são simuladas.
+
+### Sem chave de LLM
+
+Tudo acima funciona sem configurar chave nenhuma. Sem ela, o redator por template
+assume a redação — o mesmo caminho usado quando a cota do dia acaba ou quando o
+guardrail reprova a mensagem do modelo.
 
 ---
 
 ## Arquitetura
 
 ```
-                     +--------------------------------------------+
-  cidades            |  COLETA (app/clients)                      |
-  monitoradas   ---->|  consulta a API meteorologica e normaliza  |
-                     +----------------------+---------------------+
-                                            |
-                                            v
-                     +--------------------------------------------+
-                     |  ANALISE (app/domain)                      |
-                     |  chuva, raio, vento forte e granizo        |
-                     +----------------------+---------------------+
-                                            |
-                                            v
-                     +--------------------------------------------+
-  base de            |  DECISAO (app/domain)                      |
-  segurados     ---->|  regras evento x apolice -> quem avisar    |
-                     +----------------------+---------------------+
-                                            |
-                                            v
-                     +--------------------------------------------+
-                     |  REDACAO (app/agents)                      |
-                     |  LLM escreve a mensagem por perfil e canal |
-                     +----------------------+---------------------+
-                                            |
-                                            v
-                        caixa de saida simulada (nenhum envio real)
+                     +------------------------------------------------+
+  cidades            |  COLETA (app/clients)                          |
+  monitoradas   ---->|  Open-Meteo e INMET, com cache e retentativas  |
+                     +------------------------------------------------+
+                                             |
+                                             v (PrevisaoHoraria)
+                     +------------------------------------------------+
+                     |  ANALISE (app/domain)                          |
+                     |  limiares de regras.yaml -> evento, severidade |
+                     +------------------------------------------------+
+                                             |
+                                             v (EventoClimatico)
+                     +------------------------------------------------+
+  base de            |  DECISAO (app/domain)                          |
+  segurados     ---->|  regras evento x apolice -> quem avisar        |
+                     +------------------------------------------------+
+                                             |
+                                             v (Segurado + Evento)
+                     +------------------------------------------------+
+                     |  REDACAO (app/agents)                          |
+                     |  LLM escreve por perfil, canal e severidade    |
+                     +------------------------------------------------+
+                                             |
+                                             v (Notificacao)
+                     +------------------------------------------------+
+                     |  GUARDRAIL (app/agents)                        |
+                     |  sem numero inventado, sem promessa, no limite |
+                     +------------------------------------------------+
+                                   aprovada  |  reprovada
+                                             |         +--> redator por template
+                                             v              (app/agents/templates.py)
+                        caixa de saida simulada em JSONL (nenhum envio real)
 ```
 
 ### Estrutura de pastas
@@ -129,8 +177,8 @@ python -m pytest tests/ -v         # testes dos contratos de dados
 | `app/domain/` | Classificação de eventos, base de segurados e motor de regras |
 | `app/agents/` | Agentes especializados e orquestrador |
 | `data/` | Base sintética de segurados e arquivo de regras |
-| `scripts/` | Utilitários de demonstração e empacotamento |
-| `docs/` | Roteiro do projeto e relatório técnico |
+| `scripts/` | Demonstração por linha de comando, geração da galeria e utilitários |
+| `docs/` | Roteiro do projeto, relatório técnico e galeria de mensagens |
 | `tests/` | Testes automatizados |
 
 ---
