@@ -29,6 +29,10 @@ INCLUIR = [
     "tests",
     "data",
     "docs",
+    # o tema da interface: sem ele o Streamlit sobe com a aparência padrão, e
+    # quem avalia não vê a tela como ela foi desenhada. O `secrets.toml`, que
+    # moraria na mesma pasta, está em EXCLUIR_ARQUIVOS.
+    ".streamlit/config.toml",
     "streamlit_app.py",
     "requirements.txt",
     ".env.example",
