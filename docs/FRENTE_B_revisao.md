@@ -1,110 +1,108 @@
-# Revisão da planilha da frente B
+# Review of the workstream B spreadsheet
 
-Registro do que foi recebido do especialista, do que foi corrigido e do que
-ainda precisa de confirmação. Os limiares em si estão todos aproveitados —
-nenhum número foi alterado.
+A record of what came back from the domain expert, what was corrected and what still
+needs confirmation. The thresholds themselves are all usable — no number was changed.
 
-**Recebido em:** 25/08/2026
-**Origem:** `FRENTE_B_limiares_e_segurados_preenchido.xlsx`
-**Resultado:** `data/regras.yaml`
+**Received on:** August 25, 2026
+**Source:** `FRENTE_B_limiares_e_segurados_preenchido.xlsx`
+**Result:** `data/regras.yaml`
 
 ---
 
-## 1. Deslocamento de uma linha na tabela de limiares
+## 1. One-row offset in the thresholds table
 
-Os valores foram preenchidos **uma linha acima** do lugar correspondente. A
-primeira dupla de valores caiu na linha de cabeçalho, e cada dupla seguinte
-ficou na linha do critério anterior.
+The values were filled in **one row above** their corresponding criterion. The first pair
+of values landed on the header row, and every subsequent pair ended up on the previous
+criterion's row.
 
-O diagnóstico é inequívoco porque **as unidades casam perfeitamente** ao
-deslocar tudo uma linha para baixo — "60 km/h" só pode ser rajada, "800 J/kg"
-só pode ser CAPE. Nenhum valor foi inventado ou adivinhado: apenas
-reposicionado.
+The diagnosis is unambiguous because **the units line up perfectly** once everything is
+shifted one row down — "60 km/h" can only be a wind gust, "800 J/kg" can only be CAPE. No
+value was invented or guessed: they were only repositioned.
 
-### Como foi corrigido
+### How it was corrected
 
-| Critério | Unidade | Atenção | Alerta |
+| Criterion | Unit | Watch | Alert |
 | --- | --- | --- | --- |
-| Chuva acumulada em 24 h | mm | 40 | 60 |
-| Chuva na hora mais forte | mm/h | 15 | 30 |
-| Rajada máxima | km/h | 60 | 80 |
-| CAPE (raio) | J/kg | 800 | 1.500 |
-| CAPE (granizo) | J/kg | 1.500 | 2.500 |
-| Altura de congelamento | m | abaixo de 3.800 | abaixo de 3.200 |
+| Rainfall accumulated over 24 h | mm | 40 | 60 |
+| Rainfall in the heaviest hour | mm/h | 15 | 30 |
+| Maximum gust | km/h | 60 | 80 |
+| CAPE (lightning) | J/kg | 800 | 1,500 |
+| CAPE (hail) | J/kg | 1,500 | 2,500 |
+| Freezing level height | m | below 3,800 | below 3,200 |
 
-As justificativas acompanharam o mesmo deslocamento e foram realinhadas junto.
-Cada uma está no campo `porque` do `regras.yaml`, pronta para o relatório.
+The rationales followed the same offset and were realigned along with the values. Each
+one lives in the `porque` field of `regras.yaml`, ready for the report.
 
-### Duplicata resolvida
+### Duplicate resolved
 
-As duas últimas linhas preenchidas traziam o mesmo par de valores para a altura
-de congelamento (3.800 / 3.200 m), com justificativas equivalentes. Mantida a
-redação da última, que é a mais completa: *"...maior a chance de o granizo
-alcançar o solo sem derreter. O indicador deve ser analisado junto com CAPE e
-demais condições da tempestade."*
-
----
-
-## 2. Resolvido: granizo + apólice residencial
-
-A recomendação recebida para **granizo + residencial** trata de veículo:
-
-> "Se possível, mantenha o veículo em garagem ou sob cobertura resistente e
-> evite deixá-lo exposto ao tempo até o fim da tempestade."
-
-Isso descreve a apólice **automotiva**, que já tem sua própria recomendação na
-linha seguinte. As outras seis estão corretas e específicas.
-
-Redação proposta na revisão, para a apólice residencial:
-
-> "Recolha objetos que possam ser danificados em áreas descobertas, evite
-> permanecer sob claraboias, telhas translúcidas ou vidros amplos e mantenha-se
-> afastado de janelas durante a queda de granizo."
-
-**Aprovada pelo especialista em 25/08/2026** e ativa no `regras.yaml`. Para
-efeito de atribuição: os limiares e as outras seis recomendações são de autoria
-do especialista; esta frase foi redigida na revisão e por ele validada.
-
-Com isso a frente B não tem mais pendências de definição.
+The last two filled-in rows carried the same pair of values for the freezing level height
+(3,800 / 3,200 m), with equivalent rationales. The wording of the last one was kept, as
+it is the more complete: *"...the greater the chance of hail reaching the ground without
+melting. This indicator must be analysed together with CAPE and the storm's other
+conditions."*
 
 ---
 
-## 3. Ganho não previsto: os eventos compostos
+## 2. Resolved: hail + home policy
 
-As justificativas trouxeram uma informação que a planilha não pedia
-explicitamente — e que melhora a regra:
+The recommendation received for **hail + home** is about a vehicle:
 
-- **Granizo:** *"O critério deve ser combinado com instabilidade (CAPE)"*
-- **Raio:** CAPE indica *"ambiente favorável a tempestades"*, não a descarga em si
+> "If possible, keep the vehicle in a garage or under sturdy cover and avoid leaving it
+> exposed to the weather until the storm is over."
 
-Ou seja, nem raio nem granizo devem ser decididos por um único número. O
-`regras.yaml` reflete isso com o campo `combinacao`:
+That describes the **auto** policy, which already has its own recommendation on the
+following row. The other six are correct and specific.
 
-| Evento | Combinação | Significado |
+Wording proposed during the review, for the home policy:
+
+> "Bring in objects that could be damaged in uncovered areas, avoid staying under
+> skylights, translucent roof tiles or large panes of glass, and keep away from windows
+> while hail is falling."
+
+**Approved by the domain expert on August 25, 2026** and live in `regras.yaml`. For the
+record on attribution: the thresholds and the other six recommendations are the expert's
+work; this sentence was written during the review and validated by him.
+
+With that, workstream B has no open definition items left.
+
+---
+
+## 3. An unplanned gain: composite events
+
+The rationales carried information the spreadsheet did not explicitly ask for — and it
+improves the rule:
+
+- **Hail:** *"The criterion must be combined with instability (CAPE)"*
+- **Lightning:** CAPE indicates *"an environment favourable to storms"*, not the discharge
+  itself
+
+In other words, neither lightning nor hail should be decided by a single number.
+`regras.yaml` reflects this through the `combinacao` field:
+
+| Event | Combination | Meaning |
 | --- | --- | --- |
-| Chuva intensa | `qualquer` | basta um critério atingir o limiar |
-| Vento forte | `qualquer` | critério único |
-| Raio | `todos` | trovoada confirmada **e** CAPE suficiente |
-| Granizo | `todos` | CAPE alto **e** congelamento baixo |
+| Heavy rain | `qualquer` | one criterion reaching the threshold is enough |
+| Strong wind | `qualquer` | single criterion |
+| Lightning | `todos` | confirmed thunderstorm **and** sufficient CAPE |
+| Hail | `todos` | high CAPE **and** low freezing level |
 
-Para o raio foi acrescentado o critério de **código WMO de trovoada** (95, 96 ou
-99), que não estava na planilha porque é detalhe da fonte de dados, não de
-seguro. Sem ele, CAPE alto sozinho classificaria como raio qualquer tarde de
-verão instável.
-
----
-
-## 4. Aba de segurados
-
-Nenhum comentário registrado nas 45 linhas — a base foi aceita como está.
+For lightning, the **WMO thunderstorm code** criterion (95, 96 or 99) was added. It wasn't
+in the spreadsheet because it is a detail of the data source, not of insurance. Without
+it, high CAPE on its own would classify any unstable summer afternoon as lightning.
 
 ---
 
-## Situação das tarefas da frente B
+## 4. Policyholders tab
 
-| Tarefa | Situação |
+No comments recorded across the 45 rows — the base was accepted as delivered.
+
+---
+
+## Status of the workstream B tasks
+
+| Task | Status |
 | --- | --- |
-| B.1 Base de segurados | concluída — 45 segurados, base aceita sem ressalvas |
-| B.2 Classificador de eventos | limiares e combinações definidos; falta implementar em código |
-| B.3 Motor de regras | `data/regras.yaml` — alterável sem tocar em Python |
-| B.4 Justificar cada limiar | concluída — seis justificativas, prontas para o relatório |
+| B.1 Policyholder base | done — 45 policyholders, base accepted without reservations |
+| B.2 Event classifier | thresholds and combinations defined; still to be implemented in code |
+| B.3 Rules engine | `data/regras.yaml` — editable without touching Python |
+| B.4 Justify every threshold | done — six rationales, ready for the report |

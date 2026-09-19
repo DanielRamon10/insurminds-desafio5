@@ -1,46 +1,48 @@
-# Ferramenta Inteligente para Comunicação Proativa com o Segurado
+# Intelligent Tool for Proactive Policyholder Communication
 
-**Desafio 5 — Curso InsurMinds · Instituto de Inteligência Artificial Aplicada (I2A2)**
+**Challenge 5 — InsurMinds Course · Instituto de Inteligência Artificial Aplicada (I2A2)**
 
-Protótipo (MVP) que monitora condições meteorológicas, identifica eventos de
-risco, decide quais segurados devem ser avisados e gera a comunicação
-preventiva — antes que o sinistro aconteça.
+*[Leia em português](README.pt-BR.md)*
 
-Licenciado sob a **licença MIT** (ver [LICENSE](LICENSE)).
+A prototype (MVP) that monitors weather conditions, identifies risk events, decides which
+policyholders should be warned and drafts the preventive message — before the claim
+happens.
+
+Licensed under the **MIT license** (see [LICENSE](LICENSE)).
 
 ---
 
-## Grupo
+## Team
 
-| Integrante | Frente |
+| Member | Workstream |
 | --- | --- |
-| Daniel Ramon | A — Coleta meteorológica |
-| Paulo Henrique | B — Segurados e regras de negócio |
-| Nicole Paes | C — Agentes e geração de mensagens |
-| Paulo Roberto | D — Simulação de envio e demonstração |
-| Juliana Catarina | E — Documentação e entrega (representante) |
+| Daniel Ramon | A — Weather data collection |
+| Paulo Henrique | B — Policyholders and business rules |
+| Nicole Paes | C — Agents and message generation |
+| Paulo Roberto | D — Delivery simulation and demo |
+| Juliana Catarina | E — Documentation and submission (representative) |
 
 ---
 
-## Cenários cobertos
+## Covered scenarios
 
-Duas apólices e quatro eventos climáticos, com sete combinações ativas:
+Two policy types and four weather events, giving seven active combinations:
 
-| Evento | Residencial | Automotiva | Sinal na API |
+| Event | Home | Auto | Signal in the API |
 | --- | --- | --- | --- |
-| Chuva intensa | alagamento, infiltração | aquaplanagem, via alagada | `precipitation` |
-| Raio | surto elétrico | não se aplica | `weather_code` 95 + `cape` |
-| Vento forte | telhas, objetos soltos | queda de árvore sobre o veículo | `wind_gusts_10m` |
-| Granizo | telhado, claraboias, vidros | lataria e para-brisa | `cape` + `freezing_level_height` |
+| Heavy rain | flooding, water ingress | aquaplaning, flooded road | `precipitation` |
+| Lightning | electrical surge | not applicable | `weather_code` 95 + `cape` |
+| Strong wind | roof tiles, loose objects | tree falling on the vehicle | `wind_gusts_10m` |
+| Hail | roof, skylights, glass | bodywork and windshield | `cape` + `freezing_level_height` |
 
-> Raio × automotiva é intencionalmente descartado: um automóvel é uma gaiola de
-> Faraday e não há recomendação preventiva honesta a dar nesse caso.
+> Lightning × auto is deliberately dropped: a car is a Faraday cage, and there is no
+> honest preventive recommendation to give in that case.
 
 ---
 
-## Instalação
+## Installation
 
-Requer **Python 3.10 ou superior**.
+Requires **Python 3.10 or newer**.
 
 ```bash
 git clone https://github.com/DanielRamon10/insurminds-desafio5.git
@@ -53,162 +55,164 @@ python -m venv .venv
 pip install -r requirements.txt
 ```
 
-### Configuração da chave de API
+### API key configuration
 
-A fonte de dados meteorológicos (Open-Meteo) **não exige chave**. A chave é
-necessária apenas para o modelo de linguagem que redige as mensagens.
+The weather data source (Open-Meteo) **requires no key**. A key is only needed for the
+language model that drafts the messages.
 
 ```bash
 copy .env.example .env           # Windows
 # cp .env.example .env             # Linux / macOS
 ```
 
-Abra o `.env` e preencha a chave do provedor escolhido. O padrão é o Google
-Gemini, que possui camada gratuita — crie a chave em
-<https://aistudio.google.com/apikey>.
+Open `.env` and fill in the key for your chosen provider. The default is Google Gemini,
+which has a free tier — create a key at <https://aistudio.google.com/apikey>.
 
 ```env
 LLM_PROVIDER=google
 LLM_MODEL=gemini-3.6-flash
-GOOGLE_API_KEY=sua-chave-aqui
+GOOGLE_API_KEY=your-key-here
 ```
 
-O arquivo `.env` está no `.gitignore` e **nunca deve ser versionado**. Nenhuma
-credencial aparece no código-fonte.
+The `.env` file is listed in `.gitignore` and **must never be committed**. No credential
+appears anywhere in the source code.
 
 ---
 
-## Execução
+## Running
 
-### Interface de demonstração
+### Demo interface
 
 ```bash
 streamlit run streamlit_app.py
 ```
 
-A barra lateral escolhe entre a previsão real e um cenário climático forçado, e
-permite ligar ou desligar a redação por LLM.
+The sidebar switches between the real forecast and a forced weather scenario, and lets
+you turn LLM drafting on or off.
 
-### Linha de comando
-
-```bash
-python -m scripts.demo                        # previsão real das cidades monitoradas
-python -m scripts.demo --cenario granizo      # cenário forçado, sem depender do tempo
-python -m scripts.demo --listar-cenarios      # os oito cenários disponíveis
-python -m scripts.demo --cenario raio --sem-llm   # só o redator por template
-```
-
-Num dia calmo a previsão real não produz evento nenhum, e a saída diz isso —
-silêncio é resposta correta. Os cenários forçados existem justamente para a
-demonstração não depender do tempo.
-
-### Galeria de mensagens
+### Command line
 
 ```bash
-python -m scripts.gerar_galeria               # regenera docs/GALERIA_MENSAGENS.md
+python -m scripts.demo                        # real forecast for the monitored cities
+python -m scripts.demo --cenario granizo      # forced scenario, independent of the weather
+python -m scripts.demo --listar-cenarios      # the eight available scenarios
+python -m scripts.demo --cenario raio --sem-llm   # template drafter only
 ```
 
-Executa o pipeline inteiro e escreve um exemplo de mensagem por cenário, cada um
-com as medidas que o dispararam e a contagem de caracteres do canal.
+On a calm day the real forecast produces no event at all, and the output says so —
+silence is a correct answer. The forced scenarios exist precisely so the demo doesn't
+depend on the weather.
 
-A galeria versionada foi gerada **com o LLM**. Rodar o comando sem chave
-configurada produziria uma versão só de template, pior para a entrega — o script
-detecta isso e aborta, em vez de sobrescrever em silêncio.
+### Message gallery
 
-### Testes
+```bash
+python -m scripts.gerar_galeria               # regenerates docs/GALERIA_MENSAGENS.md
+```
+
+Runs the whole pipeline and writes one example message per scenario, each with the
+measurements that triggered it and the character count for the channel.
+
+The committed gallery was generated **with the LLM**. Running the command without a key
+configured would produce a template-only version, worse for the submission — the script
+detects this and aborts rather than overwriting silently.
+
+> The messages in the gallery are in Portuguese: they are the product's output, addressed
+> to Brazilian policyholders.
+
+### Tests
 
 ```bash
 python -m pytest -q
 ```
 
-**119 testes**, nenhum deles tocando a rede: as respostas das APIs e do modelo de
-linguagem são simuladas.
+**119 tests**, none of them touching the network: the API and language-model responses
+are stubbed.
 
-### Sem chave de LLM
+### Without an LLM key
 
-Tudo acima funciona sem configurar chave nenhuma. Sem ela, o redator por template
-assume a redação — o mesmo caminho usado quando a cota do dia acaba ou quando o
-guardrail reprova a mensagem do modelo.
+Everything above works with no key configured at all. Without one, the template drafter
+takes over the writing — the same path used when the daily quota runs out or when the
+guardrail rejects the model's message.
 
 ---
 
-## Arquitetura
+## Architecture
 
 ```
                      +------------------------------------------------+
-  cidades            |  COLETA (app/clients)                          |
-  monitoradas   ---->|  Open-Meteo e INMET, com cache e retentativas  |
+  monitored          |  COLLECTION (app/clients)                      |
+  cities        ---->|  Open-Meteo and INMET, with cache and retries  |
                      +------------------------------------------------+
                                              |
                                              v (PrevisaoHoraria)
                      +------------------------------------------------+
-                     |  ANALISE (app/domain)                          |
-                     |  limiares de regras.yaml -> evento, severidade |
+                     |  ANALYSIS (app/domain)                         |
+                     |  regras.yaml thresholds -> event, severity     |
                      +------------------------------------------------+
                                              |
                                              v (EventoClimatico)
                      +------------------------------------------------+
-  base de            |  DECISAO (app/domain)                          |
-  segurados     ---->|  regras evento x apolice -> quem avisar        |
+  policyholder       |  DECISION (app/domain)                         |
+  base          ---->|  event x policy rules -> who to warn           |
                      +------------------------------------------------+
                                              |
                                              v (Segurado + Evento)
                      +------------------------------------------------+
-                     |  REDACAO (app/agents)                          |
-                     |  LLM escreve por perfil, canal e severidade    |
+                     |  DRAFTING (app/agents)                         |
+                     |  LLM writes per profile, channel and severity  |
                      +------------------------------------------------+
                                              |
                                              v (Notificacao)
                      +------------------------------------------------+
                      |  GUARDRAIL (app/agents)                        |
-                     |  sem numero inventado, sem promessa, no limite |
+                     |  no invented figure, no promise, within limit  |
                      +------------------------------------------------+
-                                   aprovada  |  reprovada
-                                             |         +--> redator por template
+                                   approved  |  rejected
+                                             |         +--> template drafter
                                              v              (app/agents/templates.py)
-                        caixa de saida simulada em JSONL (nenhum envio real)
+                          simulated outbox in JSONL (nothing is actually sent)
 ```
 
-### Estrutura de pastas
+### Repository layout
 
-| Caminho | Conteúdo |
+| Path | Contents |
 | --- | --- |
-| `app/clients/` | Integração com as fontes externas de dados meteorológicos |
-| `app/domain/` | Classificação de eventos, base de segurados e motor de regras |
-| `app/agents/` | Agentes especializados e orquestrador |
-| `data/` | Base sintética de segurados e arquivo de regras |
-| `scripts/` | Demonstração por linha de comando, geração da galeria e utilitários |
-| `docs/` | Roteiro do projeto, relatório técnico e galeria de mensagens |
-| `tests/` | Testes automatizados |
+| `app/clients/` | Integration with the external weather data sources |
+| `app/domain/` | Event classification, policyholder base and the rules engine |
+| `app/agents/` | Specialised agents and the orchestrator |
+| `data/` | Synthetic policyholder base and the rules file |
+| `scripts/` | Command-line demo, gallery generation and utilities |
+| `docs/` | Project roadmap, technical report and message gallery |
+| `tests/` | Automated tests |
 
 ---
 
-## Fonte de dados
+## Data sources
 
-Duas fontes públicas, de naturezas complementares e nenhuma exigindo chave.
+Two public sources, complementary in nature, neither requiring a key.
 
-### Previsão numérica — [Open-Meteo](https://open-meteo.com)
+### Numerical forecast — [Open-Meteo](https://open-meteo.com)
 
-Fonte primária: entrega os números que o classificador interpreta com os
-limiares definidos pelo especialista. Variáveis consumidas: `precipitation`,
-`wind_gusts_10m`, `weather_code` (códigos WMO), `cape` (energia potencial
-convectiva disponível) e `freezing_level_height` (altitude da isoterma de 0 °C,
-usada para estimar risco de granizo).
+The primary source: it supplies the numbers the classifier interprets against the
+thresholds set by the domain expert. Variables consumed: `precipitation`,
+`wind_gusts_10m`, `weather_code` (WMO codes), `cape` (convective available potential
+energy) and `freezing_level_height` (altitude of the 0 °C isotherm, used to estimate hail
+risk).
 
-### Avisos oficiais — [INMET](https://portal.inmet.gov.br)
+### Official warnings — [INMET](https://portal.inmet.gov.br)
 
-Fonte complementar: o Instituto Nacional de Meteorologia já decidiu que há risco
-e publicou o aviso, com riscos e instruções redigidos por órgão público. O
-casamento com as cidades é por **código IBGE**, nunca por nome.
+The complementary source: Brazil's National Institute of Meteorology has already decided
+there is a risk and published the warning, with risks and instructions written by a
+public authority. Matching to cities is done by **IBGE code**, never by name.
 
-O papel é de enriquecimento, não de validação: um único aviso pode cobrir
-milhares de municípios, então ele afirma algo sobre a *região*, não sobre a
-coordenada da cidade. A ausência de aviso oficial nunca derruba um evento
-classificado, e a presença dele nunca cria um.
+Its role is enrichment, not validation: a single warning can cover thousands of
+municipalities, so it asserts something about the *region*, not about the city's
+coordinates. The absence of an official warning never cancels a classified event, and its
+presence never creates one.
 
 ---
 
-## Observações
+## Notes
 
-Nenhuma notificação é efetivamente enviada. O envio de SMS, e-mail ou *push* é
-simulado e registrado, conforme previsto no enunciado do desafio.
+No notification is actually sent. SMS, email and *push* delivery is simulated and logged,
+as the challenge brief specifies.
